@@ -21,8 +21,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* TÍTULO E FILTROS */}
-        <div className="section-title centered">
+        {/* 1. ADICIONAMOS O ID="produtos" AQUI NO TÍTULO */}
+        <div id="produtos" className="section-title centered" style={{ scrollMarginTop: '80px' }}>
           <h2>Mais <span>Desejados</span></h2>
         </div>
         
@@ -43,8 +43,8 @@ export default function Home() {
           <ProductCard name="Regata Ciclo" price="R$ 100,00" image="/img/ciclo1.jpg" link="/ciclo" />
         </div>
 
-        {/* SEÇÃO QUEM SOMOS */}
-        <section className="about-section">
+        {/* 2. ADICIONAMOS O ID="quem-somos" AQUI NA SESSÃO */}
+        <section id="quem-somos" className="about-section" style={{ scrollMarginTop: '80px' }}>
           <h3>Você já conhece a <span>FIDÈLE?</span></h3>
           <div className="about-content">
             <img src="/img/capa.jpg" alt="Equipe Fidele" />

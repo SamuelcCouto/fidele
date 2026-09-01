@@ -14,15 +14,19 @@ interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string, size: string) => void;
-  updateQuantity: (id: string, size: string, amount: number) => void; // NOSSA NOVA FUNÇÃO AQUI
+  updateQuantity: (id: string, size: string, amount: number) => void;
   cartCount: number;
   cartTotal: string;
+  // NOVAS FUNÇÕES PARA CONTROLAR A GAVETA GLOBALMENTE
+  isCartOpen: boolean;
+  setIsCartOpen: (isOpen: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false); // Estado da gaveta
 
   useEffect(() => {
     const savedCart = localStorage.getItem("@fidele:cart");
@@ -54,17 +58,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  // A INTELIGÊNCIA DE + e -
   const updateQuantity = (id: string, size: string, amount: number) => {
     setCart((prev) => {
       const newCart = prev.map(item => {
-        // Encontra o item certo que a pessoa clicou
         if (item.id === id && item.size === size) {
           return { ...item, quantity: item.quantity + amount };
         }
         return item;
-      }).filter(item => item.quantity > 0); // Se a quantidade zerar, ele exclui sozinho!
-
+      }).filter(item => item.quantity > 0);
       localStorage.setItem("@fidele:cart", JSON.stringify(newCart));
       return newCart;
     });
@@ -80,7 +81,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const cartTotal = `R$ ${cartTotalNumber.toFixed(2).replace(".", ",")}`;
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, cartCount, cartTotal }}>
+    <CartContext.Provider value={{ 
+      cart, addToCart, removeFromCart, updateQuantity, cartCount, cartTotal,
+      isCartOpen, setIsCartOpen // Disponibiliza para o site todo
+    }}>
       {children}
     </CartContext.Provider>
   );

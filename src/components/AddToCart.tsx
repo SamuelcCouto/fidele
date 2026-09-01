@@ -13,14 +13,19 @@ interface AddToCartProps {
 }
 
 export default function AddToCart({ product }: AddToCartProps) {
-  // Guarda qual tamanho o usuário clicou
   const [selectedSize, setSelectedSize] = useState<string>("");
-  // Puxa a função de salvar do nosso Contexto
-  const { addToCart } = useCart();
+  const [showModal, setShowModal] = useState(false);
+  const [showError, setShowError] = useState(false); // Nova memória para o erro
+  
+  const { addToCart, setIsCartOpen } = useCart();
 
   const handleBuy = () => {
+    // Se o cliente não escolheu o tamanho:
     if (!selectedSize) {
-      alert("Por favor, selecione um tamanho antes de comprar!");
+      setShowError(true); // Liga o aviso visual
+      
+      // Desliga o aviso e a animação depois de 2 segundos para o cliente poder tentar de novo
+      setTimeout(() => setShowError(false), 2000); 
       return;
     }
 
@@ -33,24 +38,37 @@ export default function AddToCart({ product }: AddToCartProps) {
       quantity: 1,
     });
 
-    alert(`${product.name} (Tam: ${selectedSize}) adicionado ao carrinho!`);
+    setShowModal(true);
+  };
+
+  const handleGoToCart = () => {
+    setShowModal(false);
+    setIsCartOpen(true); 
   };
 
   return (
     <>
-      <div className="pdp-sizes">
+      <div className={`pdp-sizes ${showError ? "shake-animation" : ""}`}>
         <p>Tamanho:</p>
+        
+        {/* Nossa nova mensagem de erro suave */}
+        <div className={`size-error-msg ${showError ? "visible" : ""}`}>
+          ⚠️ Escolha um tamanho para continuar.
+        </div>
+
         <div className="size-options">
           {product.sizes.map((size) => (
             <button
               key={size}
               className="size-btn"
               style={{
-                // Pinta de rosa se for o tamanho selecionado!
-                borderColor: selectedSize === size ? "var(--pink)" : "var(--line)",
-                color: selectedSize === size ? "var(--pink)" : "var(--cream)",
+                borderColor: selectedSize === size ? "var(--pink)" : (showError ? "#ff4d4d" : "var(--line)"),
+                color: selectedSize === size ? "var(--pink)" : (showError ? "#ff4d4d" : "var(--cream)"),
               }}
-              onClick={() => setSelectedSize(size)}
+              onClick={() => {
+                setSelectedSize(size);
+                setShowError(false); // Se a pessoa clicar no tamanho, o erro some na hora!
+              }}
             >
               {size}
             </button>
@@ -61,6 +79,23 @@ export default function AddToCart({ product }: AddToCartProps) {
       <button className="buy-btn-large" onClick={handleBuy}>
         Comprar
       </button>
+
+      <div className={`modal-overlay ${showModal ? "show" : ""}`}>
+        <div className="modal-box">
+          <h3>Perfeito! 🛍️</h3>
+          <p>
+            A <strong>{product.name}</strong> (Tam: {selectedSize}) foi adicionada ao seu carrinho com sucesso.
+          </p>
+          <div className="modal-buttons">
+            <button className="btn-outline" onClick={() => setShowModal(false)}>
+              Continuar Comprando
+            </button>
+            <button className="btn-solid" onClick={handleGoToCart}>
+              Ir para o Carrinho
+            </button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

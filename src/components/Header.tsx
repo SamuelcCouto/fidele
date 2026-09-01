@@ -1,14 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/contexts/CartContext";
-import CartDrawer from "./CartDrawer"; // 1. Importamos a Gaveta
+import CartDrawer from "./CartDrawer";
 
 export default function Header() {
   const logoRef = useRef<HTMLImageElement>(null);
   const [isLight, setIsLight] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false); // 2. Criamos o controle de abrir/fechar
   
-  const { cartCount } = useCart(); 
+  // Puxamos tudo do nosso Cérebro Global
+  const { cartCount, isCartOpen, setIsCartOpen } = useCart(); 
 
   useEffect(() => {
     let angle = 0;
@@ -54,7 +54,6 @@ export default function Header() {
             <div className="icon-btn theme-toggle" onClick={toggleTheme}>
               {isLight ? '🌙' : '☀️'}
             </div>
-            {/* 3. Trocamos o Alert pela função que abre a Gaveta */}
             <div className="icon-btn cart" onClick={() => setIsCartOpen(true)}>
               🛍
               {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
@@ -63,7 +62,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* 4. Colocamos a Gaveta aqui, passando o estado para ela saber quando deve aparecer */}
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   );

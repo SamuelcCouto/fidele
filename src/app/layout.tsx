@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import AnimatedBackground from "@/components/AnimatedBackground"; 
+import AnimatedBackground from "@/components/AnimatedBackground";
+import { CartProvider } from "@/contexts/CartContext"; // 1. O Import (Você trouxe a caixa)
 
 export const metadata: Metadata = {
   title: "FIDÈLE — Loja Oficial",
@@ -17,15 +18,18 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body>
-        {/* Agora o JS do fundo é disparado por este componente no topo do body */}
-        <AnimatedBackground/>
+        <AnimatedBackground />
         
-        <Header/>
-        
-        {/* Aqui é onde a página atual (vitrine, produto, etc) vai ser injetada! */}
-        {children}
-        
-        <Footer/>
+        {/* 2. O ABRAÇO: Começa aqui! Tudo que está dentro ganha "memória" */}
+        <CartProvider>
+          
+          <Header />
+          {children}
+          <Footer />
+          
+        </CartProvider>
+        {/* Termina o abraço aqui */}
+
       </body>
     </html>
   );

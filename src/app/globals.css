@@ -653,3 +653,160 @@ body.light-theme footer {
 .shake-animation {
   animation: shakeError 0.4s ease-in-out;
 }
+/* ==========================
+   NOVO CABEÇALHO (LUS INSPIRATION)
+   ========================== */
+header {
+  position: relative;
+  z-index: 100;
+  padding: 15px 5%;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+.nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+/* Barra de Pesquisa */
+.search-container {
+  flex: 1;
+  max-width: 600px;
+  position: relative;
+  display: none; /* Escondido no mobile, mostramos no desktop */
+}
+.search-input {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 30px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--cream);
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.3s;
+}
+.search-input:focus {
+  border-color: var(--pink);
+}
+.search-btn-inside {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--pink);
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* Ícones SVG Modernos */
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.icon-svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--cream);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.icon-svg:hover {
+  stroke: var(--pink);
+}
+/* O botão do carrinho precisa ser relativo para a bolinha vermelha ficar por cima */
+.cart-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.cart-wrapper .cart-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--pink);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ==========================
+   MENU LATERAL MOBILE (HAMBÚRGUER)
+   ========================== */
+.mobile-menu-drawer {
+  position: fixed;
+  top: 0; left: -350px; width: 300px; max-width: 85vw; height: 100vh;
+  background: var(--bg);
+  border-right: 1px solid var(--line);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: left 0.3s ease;
+  box-shadow: 5px 0 20px rgba(0,0,0,0.8);
+}
+.cart-overlay.open .mobile-menu-drawer {
+  left: 0;
+}
+.mobile-menu-content {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+.mobile-link {
+  color: var(--cream);
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.mobile-link:hover {
+  color: var(--pink);
+  padding-left: 5px;
+}
+.mobile-menu-footer {
+  padding: 20px 30px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--cream);
+  cursor: pointer;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+  .search-container { display: none; }
+  .nav-row { justify-content: space-between; }
+  .links { display: none; } /* Esconde os links centrais no mobile */
+  /* Mostra o ícone de lupa solto no mobile */
+  .mobile-search-icon { display: block; }
+}
+@media (min-width: 769px) {
+  .burger { display: none; } /* Esconde o hambúrguer no desktop */
+  .search-container { display: block; }
+  .mobile-search-icon { display: none; }
+}

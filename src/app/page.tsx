@@ -1,69 +1,57 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import ProductCard from "@/components/ProductCard";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      {/* FAIXA PROMO */}
+      <div className="promo-bar">
+        <span>💳 3x SEM JUROS NO CARTÃO</span>
+        <span>•</span>
+        <span>🚚 FRETE GRÁTIS ACIMA DE R$ 299</span>
+      </div>
+
+      <main>
+        {/* BANNER DAS MENINAS NO TOPO */}
+        <section className="hero">
+          <div className="hero-inner">
+            <div className="hero-cover">
+              <img src="/img/capa.jpg" alt="Equipe Fidèle" />
+            </div>
+            <p className="hero-sub">Seja leal a você mesma. Esqueça as regras — se você gosta, use!</p>
+          </div>
+        </section>
+
+        {/* TÍTULO E FILTROS */}
+        <div className="section-title centered">
+          <h2>Mais <span>Desejados</span></h2>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        
+        <div className="category-pills">
+          <button className="pill active">Parte de cima</button>
+          <button className="pill">Parte de baixo</button>
+          <button className="pill">Fitness</button>
         </div>
+
+        {/* GRADE DE PRODUTOS COMPLETA */}
+        <div className="product-grid">
+          <ProductCard name="Regata Orvalho" price="R$ 130,00" image="/img/regatabranca.jpg" link="/regata" />
+          <ProductCard name="Polo Florescer" price="R$ 155,00" image="/img/polo1.jpg" link="/polo" />
+          <ProductCard name="Regata Despertar" price="R$ 115,00" image="/img/despertar1.jpg" link="/despertar" />
+          <ProductCard name="Camisa Essência" price="R$ 115,00" image="/img/essencia1.jpg" link="/essencia" />
+          <ProductCard name="Regata Eva" price="R$ 100,00" image="/img/eva1.jpg" link="/eva" />
+          <ProductCard name="Camisa Marco 23" price="R$ 115,00" image="/img/marco1.jpg" link="/marco" />
+          <ProductCard name="Regata Ciclo" price="R$ 100,00" image="/img/ciclo1.jpg" link="/ciclo" />
+        </div>
+
+        {/* SEÇÃO QUEM SOMOS */}
+        <section className="about-section">
+          <h3>Você já conhece a <span>FIDÈLE?</span></h3>
+          <div className="about-content">
+            <img src="/img/capa.jpg" alt="Equipe Fidele" />
+            <p>Mais do que uma marca de streetwear, somos um movimento. Peças pensadas com exclusividade, tecido premium e atitude para quem dita as próprias regras.</p>
+          </div>
+        </section>
       </main>
-    </div>
+    </>
   );
 }

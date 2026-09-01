@@ -1,18 +1,26 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation"; // O "motorista" que muda de página
+import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 import CartDrawer from "./CartDrawer";
 import MobileMenu from "./MobileMenu";
 
+// 1. Importamos os produtos para podermos vasculhar em tempo real!
+import { productsData, Product } from "@/data/products";
+
 export default function Header() {
   const logoRef = useRef<HTMLImageElement>(null);
-  const router = useRouter(); // Iniciamos o roteador
+  const router = useRouter();
   
   const [isLight, setIsLight] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showMobileSearch, setShowMobileSearch] = useState(false); // Controle da pesquisa no celular
-  const [searchQuery, setSearchQuery] = useState(""); // Guarda o texto digitado
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  
+  const [searchQuery, setSearchQuery] = useState(""); 
+  
+  // 2. Memórias da nossa Busca Instantânea
+  const [liveResults, setLiveResults] = useState<Product[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   
   const { cartCount, isCartOpen, setIsCartOpen } = useCart(); 
 
@@ -38,15 +46,46 @@ export default function Header() {
     setIsLight(body.classList.contains('light-theme')); 
   };
 
-  // Função que dispara quando a pessoa aperta ENTER ou clica na Lupa
-  const handleSearch = (e: React.FormEvent) => {
+  // 3. O motor super rápido de filtragem
+  const handleInputChange = (text: string) => {
+    setSearchQuery(text);
+    
+    if (text.trim().length > 0) {
+      const query = text.toLowerCase();
+      const allProducts = Object.values(productsData);
+      
+      const filtered = allProducts.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        p.description.some(d => d.toLowerCase().includes(query))
+      );
+      
+      setLiveResults(filtered);
+      setShowDropdown(true);
+    } else {
+      setLiveResults([]);
+      setShowDropdown(false);
+    }
+  };
+
+  // Se apertar o ENTER, vai pra página de pesquisa completa
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim() !== "") {
-      // Navega para a página de busca passando a palavra na URL
       router.push(`/busca?q=${encodeURIComponent(searchQuery)}`);
-      setShowMobileSearch(false); // Esconde a barra no mobile após buscar
-      setSearchQuery(""); // Limpa o campo
+      closeAllSearch();
     }
+  };
+
+  // Se clicar em um resultado rápido, vai direto pra roupa!
+  const handleResultClick = (productId: string) => {
+    router.push(`/${productId}`);
+    closeAllSearch();
+  };
+
+  const closeAllSearch = () => {
+    setShowDropdown(false);
+    setShowMobileSearch(false);
+    setSearchQuery("");
   };
 
   return (
@@ -70,21 +109,41 @@ export default function Header() {
             </div>
           </div>
 
-          {/* FORMULÁRIO DE PESQUISA DESKTOP */}
-          <form className="search-container" onSubmit={handleSearch}>
+          {/* ========================================= */}
+          {/* BARRA DE PESQUISA DESKTOP */}
+          {/* ========================================= */}
+          <form className="search-container" onSubmit={handleSearchSubmit}>
             <input 
               type="text" 
               className="search-input" 
               placeholder="Olá, o que você procura?" 
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 200)} // Esconde se clicar fora (com atraso pro clique funcionar)
+              onFocus={() => { if(searchQuery.length > 0) setShowDropdown(true); }}
             />
             <button type="submit" className="search-btn-inside">
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </button>
+
+            {/* O POPUP INSTANTÂNEO DESKTOP */}
+            <div className={`search-dropdown ${showDropdown && !showMobileSearch ? "visible" : ""}`}>
+              {liveResults.length > 0 ? (
+                liveResults.map(item => (
+                  <div key={item.id} className="search-dropdown-item" onClick={() => handleResultClick(item.id)}>
+                    <img src={`/img/${item.imagePrefix}1.jpg`} alt={item.name} className="search-item-img" />
+                    <div className="search-item-info">
+                      <span className="search-item-title">{item.name}</span>
+                      <span className="search-item-price">{item.price}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="search-dropdown-empty">Nenhum produto encontrado.</div>
+              )}
+            </div>
           </form>
 
           <div className="nav-icons">
@@ -92,11 +151,9 @@ export default function Header() {
               {isLight ? '🌙' : '☀️'}
             </div>
 
-            {/* LUPA MOBILE: Ao clicar, revela a barra de pesquisa */}
             <div className="mobile-search-icon" onClick={() => setShowMobileSearch(!showMobileSearch)}>
               <svg className="icon-svg" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </div>
 
@@ -110,29 +167,47 @@ export default function Header() {
             <div className="cart-wrapper" onClick={() => setIsCartOpen(true)}>
               <svg className="icon-svg" viewBox="0 0 24 24">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path>
               </svg>
               {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
             </div>
           </div>
         </div>
 
-        {/* BARRA DE PESQUISA MOBILE (Só aparece se clicar na lupa no celular) */}
+        {/* ========================================= */}
+        {/* BARRA DE PESQUISA MOBILE */}
+        {/* ========================================= */}
         {showMobileSearch && (
-          <form style={{ marginTop: '15px', display: 'flex', gap: '10px' }} onSubmit={handleSearch}>
+          <form style={{ marginTop: '15px', display: 'flex', gap: '10px', position: 'relative' }} onSubmit={handleSearchSubmit}>
             <input 
               type="text" 
               className="search-input" 
               style={{ flex: 1 }}
               placeholder="Buscar produtos..." 
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleInputChange(e.target.value)}
               autoFocus
             />
             <button type="submit" className="buy-btn-large" style={{ padding: '0 20px', width: 'auto' }}>
               Ir
             </button>
+
+            {/* O POPUP INSTANTÂNEO MOBILE */}
+            <div className={`search-dropdown ${showDropdown ? "visible" : ""}`} style={{ top: 'calc(100% + 5px)' }}>
+              {liveResults.length > 0 ? (
+                liveResults.map(item => (
+                  <div key={item.id} className="search-dropdown-item" onClick={() => handleResultClick(item.id)}>
+                    <img src={`/img/${item.imagePrefix}1.jpg`} alt={item.name} className="search-item-img" />
+                    <div className="search-item-info">
+                      <span className="search-item-title">{item.name}</span>
+                      <span className="search-item-price">{item.price}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="search-dropdown-empty">Nenhum produto encontrado.</div>
+              )}
+            </div>
           </form>
         )}
       </header>

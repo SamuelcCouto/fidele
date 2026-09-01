@@ -13,9 +13,10 @@ export interface CartItem {
 interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string, size: string) => void; // NOVA FUNÇÃO
+  removeFromCart: (id: string, size: string) => void;
+  updateQuantity: (id: string, size: string, amount: number) => void; // NOSSA NOVA FUNÇÃO AQUI
   cartCount: number;
-  cartTotal: string; // NOVO TOTAL
+  cartTotal: string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -45,7 +46,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  // Função para remover item específico
   const removeFromCart = (id: string, size: string) => {
     setCart((prev) => {
       const newCart = prev.filter(item => !(item.id === id && item.size === size));
@@ -54,9 +54,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  // A INTELIGÊNCIA DE + e -
+  const updateQuantity = (id: string, size: string, amount: number) => {
+    setCart((prev) => {
+      const newCart = prev.map(item => {
+        // Encontra o item certo que a pessoa clicou
+        if (item.id === id && item.size === size) {
+          return { ...item, quantity: item.quantity + amount };
+        }
+        return item;
+      }).filter(item => item.quantity > 0); // Se a quantidade zerar, ele exclui sozinho!
+
+      localStorage.setItem("@fidele:cart", JSON.stringify(newCart));
+      return newCart;
+    });
+  };
+
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
-  // Calcula o valor total convertendo "R$ 130,00" para 130.00
   const cartTotalNumber = cart.reduce((acc, item) => {
     const numericPrice = parseFloat(item.price.replace("R$ ", "").replace(",", "."));
     return acc + (numericPrice * item.quantity);
@@ -65,7 +80,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const cartTotal = `R$ ${cartTotalNumber.toFixed(2).replace(".", ",")}`;
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, cartCount, cartTotal }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, cartCount, cartTotal }}>
       {children}
     </CartContext.Provider>
   );

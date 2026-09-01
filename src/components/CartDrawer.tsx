@@ -7,7 +7,8 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-  const { cart, removeFromCart, cartTotal, cartCount } = useCart();
+  // Puxamos nossa nova função updateQuantity
+  const { cart, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
 
   return (
     <div className={`cart-overlay ${isOpen ? "open" : ""}`} onClick={onClose}>
@@ -29,13 +30,21 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <img src={item.image} alt={item.name} />
                 <div className="cart-item-info">
                   <span className="cart-item-title">{item.name}</span>
-                  <span className="cart-item-size">Tam: {item.size} | Qtd: {item.quantity}</span>
+                  <span className="cart-item-size">Tam: {item.size}</span>
+                  
+                  {/* NOVOS CONTROLES DE QUANTIDADE AQUI */}
+                  <div className="quantity-controls">
+                    <button className="qty-btn" onClick={() => updateQuantity(item.id, item.size, -1)}>-</button>
+                    <span className="qty-value">{item.quantity}</span>
+                    <button className="qty-btn" onClick={() => updateQuantity(item.id, item.size, 1)}>+</button>
+                  </div>
+
                   <span className="cart-item-price">{item.price}</span>
                   <button 
                     className="remove-btn"
                     onClick={() => removeFromCart(item.id, item.size)}
                   >
-                    Remover
+                    Remover todos
                   </button>
                 </div>
               </div>

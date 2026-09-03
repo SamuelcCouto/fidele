@@ -1,46 +1,63 @@
-import { productsData } from "@/data/products";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ProductGallery from "@/components/ProductGallery";
-import AddToCart from "@/components/AddToCart"; // Puxamos o botão novo!
+import { AddToCart } from "@/components/product/add-to-cart";
+import { ProductGallery } from "@/components/product/product-gallery";
+import { productsData } from "@/data/products";
+import { formatInstallments, formatPrice } from "@/lib/format-price";
+import { productCover } from "@/lib/product-image";
+import s from "./page.module.css";
 
-export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = await params;
-  const product = productsData[resolvedParams.slug];
+type Params = { params: Promise<{ slug: string }> };
+
+// O catálogo é estático: as 7 páginas de produto são pré-renderizadas.
+export function generateStaticParams() {
+  return Object.keys(productsData).map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const { slug } = await params;
+  const product = productsData[slug];
+
+  if (!product) return {};
+
+  return {
+    title: product.name,
+    description: product.description[0] ?? product.name,
+    openGraph: {
+      title: product.name,
+      images: [productCover(product)],
+    },
+  };
+}
+
+export default async function ProductPage({ params }: Params) {
+  const { slug } = await params;
+  const product = productsData[slug];
 
   if (!product) {
     notFound();
   }
 
-  // Preparamos um pacote de dados enxuto para mandar pro carrinho
-  const cartProductInfo = {
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    image: `/img/${product.imagePrefix}1.jpg`, // Pega a foto 1 como miniatura
-    sizes: product.sizes,
-  };
-
   return (
     <main>
-      <section className="pdp-lus-section">
-        <div className="pdp-lus-main">
-          
-          <ProductGallery prefix={product.imagePrefix} count={product.imageCount} />
+      <section className={s.section}>
+        <div className={s.main}>
+          <ProductGallery product={product} />
 
-          <div className="pdp-info">
-            <h1 className="pdp-title">{product.name}</h1>
-            <p className="pdp-price">{product.price}</p>
-            <p className="pdp-installments">{product.installments}</p>
+          <div className={s.info}>
+            <h1 className={s.title}>{product.name}</h1>
+            <p className={s.price}>{formatPrice(product.priceInCents)}</p>
+            <p className={s.installments}>
+              {formatInstallments(product.priceInCents)}
+            </p>
 
-            <div className="pdp-details">
-              {product.description.map((linha, index) => (
-                <p key={index}>{linha}</p>
+            <div className={s.details}>
+              {product.description.map((line) => (
+                <p key={line}>{line}</p>
               ))}
             </div>
 
-            {/* Injetamos a inteligência de compra aqui, substituindo o antigo */}
-            <AddToCart product={cartProductInfo} />
-
+            <AddToCart product={product} />
           </div>
         </div>
       </section>

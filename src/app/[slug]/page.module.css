@@ -1,0 +1,68 @@
+.section {
+  position: relative;
+  z-index: var(--z-content);
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-10) var(--gutter) var(--space-20);
+}
+
+.main {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--space-10);
+  width: 100%;
+  padding: var(--space-8);
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2xl);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 var(--space-4);
+  color: var(--cream);
+  font-family: var(--font-mono);
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.price {
+  margin: 0 0 var(--space-1);
+  color: var(--pink-soft);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.installments {
+  margin: 0 0 var(--space-8);
+  color: var(--cream);
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.details {
+  margin-bottom: var(--space-8);
+  color: var(--cream);
+  font-size: 14px;
+  line-height: 1.8;
+  opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+  .section {
+    padding: var(--space-4) var(--space-4) var(--space-20);
+  }
+
+  .main {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    padding: var(--space-4);
+  }
+}

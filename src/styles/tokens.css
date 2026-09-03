@@ -1,0 +1,106 @@
+/* =========================================================
+   DESIGN TOKENS
+   Única fonte de verdade para cor, espaço, raio, camada e tipo.
+
+   BREAKPOINTS (custom properties não funcionam dentro de @media,
+   então ficam documentados aqui e escritos literalmente):
+     --bp-mobile : 768px   -> abaixo disso: menu hambúrguer, 2 colunas
+     --bp-tablet : 1024px  -> ajustes intermediários
+   ========================================================= */
+
+:root {
+  /* ---- Cor: superfícies ---- */
+  --bg: #0a0a0c;
+  --bg-elev: #151016;
+  --footer-bg: #060607;
+  --line: rgba(255, 255, 255, 0.08);
+  --hover-tint: rgba(255, 255, 255, 0.05);
+  --scrim: rgba(0, 0, 0, 0.7);
+  --scrim-strong: rgba(0, 0, 0, 0.8);
+
+  /* ---- Cor: marca ---- */
+  --pink: #ff1f8d; /* neon: destaques, glow, badges */
+  --pink-deep: #d92579; /* botões de compra */
+  --pink-soft: #ff7cc0; /* texto de apoio */
+  --cream: #efe6d8; /* texto principal */
+  --muted: rgba(239, 230, 216, 0.6);
+
+  /* Texto sobre superfície rosa. NÃO inverte no tema claro:
+     o fundo continua rosa, então o contraste tem de continuar o mesmo. */
+  --on-pink: #0a0a0c;
+  --on-pink-deep: #ffffff;
+
+  /* ---- Cor: estado ---- */
+  --danger: #ff4d4d;
+
+  /* ---- Efeitos ---- */
+  --glow: 0 0 22px rgba(255, 31, 141, 0.35);
+  --glow-soft: 0 0 10px rgba(255, 31, 141, 0.4);
+  --shadow-drawer: 0 0 20px rgba(0, 0, 0, 0.8);
+  --shadow-dropdown: 0 15px 40px rgba(0, 0, 0, 0.6);
+  --shadow-modal: 0 10px 40px rgba(233, 30, 99, 0.15);
+
+  /* ---- Espaçamento (escala de 4px) ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* ---- Layout ---- */
+  --container: 1180px;
+  --gutter: var(--space-6);
+
+  /* ---- Raio ---- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-input: 30px;
+  --radius-pill: 99px;
+  --radius-round: 50%;
+
+  /* ---- Transição ---- */
+  --transition-fast: 0.2s;
+  --transition-base: 0.3s;
+
+  /* ---- Camadas ---- */
+  --z-base: 1;
+  --z-background: 2;
+  --z-content: 10;
+  --z-promo: 40;
+  --z-header: 100;
+  --z-drawer-scrim: 999;
+  --z-drawer: 1000;
+  --z-dropdown: 2000;
+  --z-modal: 10000;
+
+  /* ---- Tipografia (ligada ao next/font em app/layout.tsx) ---- */
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), ui-monospace, monospace;
+  --font-display: var(--font-titan-one), var(--font-sans);
+  --font-script: var(--font-caveat), cursive;
+  --font-brand: var(--font-nosifer), var(--font-display);
+}
+
+/* =========================================================
+   TEMA CLARO
+   Só sobrescreve tokens — nenhum componente precisa saber que
+   o tema existe, todos leem var(--…) e trocam sozinhos.
+   ========================================================= */
+:root[data-theme="light"] {
+  --bg: #fafafa;
+  --bg-elev: #ffffff;
+  --footer-bg: #f0f0f0;
+  --cream: #121212;
+  --muted: rgba(18, 18, 18, 0.6);
+  --line: rgba(0, 0, 0, 0.1);
+  --hover-tint: rgba(0, 0, 0, 0.04);
+}

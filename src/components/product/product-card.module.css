@@ -1,0 +1,65 @@
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: #fff;
+}
+
+.thumbImage {
+  object-fit: cover;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-top: var(--space-3);
+}
+
+.name {
+  margin: 0 0 6px;
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.price {
+  margin: 0 0 var(--space-4);
+  color: var(--cream);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.buy {
+  margin-top: auto;
+  width: 100%;
+  display: block;
+  padding: var(--space-3);
+  text-align: center;
+  background: var(--pink-deep);
+  color: var(--on-pink-deep);
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 0.1s,
+    filter var(--transition-fast);
+}
+
+.buy:hover {
+  filter: brightness(1.1);
+}
+
+.buy:active {
+  transform: scale(0.96);
+}

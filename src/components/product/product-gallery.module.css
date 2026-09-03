@@ -1,0 +1,96 @@
+.gallery {
+  display: flex;
+  gap: var(--space-4);
+  /* Impede que as miniaturas e a foto grande estiquem a página. */
+  min-width: 0;
+  max-width: 100%;
+}
+
+.thumbnails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 80px;
+  min-width: 80px;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: var(--space-1);
+}
+
+.thumbnails::-webkit-scrollbar {
+  width: 4px;
+}
+
+.thumbnails::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.thumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  background: #fff;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.thumb.active {
+  border-color: var(--pink);
+}
+
+.thumbImage {
+  object-fit: cover;
+}
+
+.main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  aspect-ratio: 4 / 5;
+  background: #fff;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.mainImage {
+  object-fit: cover;
+}
+
+@media (max-width: 900px) {
+  /* Foto grande em cima, faixa de miniaturas rolando embaixo. */
+  .gallery {
+    flex-direction: column-reverse;
+  }
+
+  .thumbnails {
+    flex-direction: row;
+    width: 100%;
+    max-height: none;
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .thumb {
+    width: 70px;
+    flex: 0 0 auto;
+  }
+
+  .main {
+    aspect-ratio: auto;
+    max-height: 60vh;
+    height: 60vh;
+  }
+
+  /* No celular a peça inteira precisa caber, sem cortar as bordas. */
+  .mainImage {
+    object-fit: contain;
+  }
+}

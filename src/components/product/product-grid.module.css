@@ -1,0 +1,25 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-5);
+  padding: 0 var(--gutter) var(--space-16);
+  max-width: var(--container);
+  margin: 0 auto;
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* A faixa 768–900px ficava com 5 colunas espremidas; agora tem seu próprio passo. */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+    padding: 0 var(--space-4) var(--space-10);
+  }
+}

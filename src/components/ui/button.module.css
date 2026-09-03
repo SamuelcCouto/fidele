@@ -1,0 +1,64 @@
+.base {
+  border-radius: var(--radius-sm);
+  padding: 14px var(--space-5);
+  font-weight: bold;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.base:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* ---- variante: solid ---- */
+.solid {
+  background: var(--pink);
+  border: 1px solid var(--pink);
+  color: var(--on-pink-deep);
+  text-transform: uppercase;
+  flex: 1;
+  min-width: 150px;
+}
+
+.solid:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: scale(1.03);
+}
+
+/* ---- variante: outline ---- */
+.outline {
+  background: transparent;
+  border: 1px solid var(--cream);
+  color: var(--cream);
+  flex: 1;
+  min-width: 150px;
+}
+
+.outline:hover:not(:disabled) {
+  background: var(--cream);
+  color: var(--bg);
+}
+
+/* ---- variante: buy (ação principal de compra) ---- */
+.buy {
+  background: var(--pink-deep);
+  border: none;
+  color: var(--on-pink-deep);
+  padding: var(--space-4);
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.buy:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.buy:hover:not(:disabled) {
+  filter: brightness(1.1);
+}

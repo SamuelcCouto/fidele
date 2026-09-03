@@ -1,0 +1,16 @@
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.inner {
+  display: inline-flex;
+  will-change: transform;
+}
+
+.image {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 4px rgba(255, 31, 141, 0.3));
+}

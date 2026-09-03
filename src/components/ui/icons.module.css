@@ -1,0 +1,15 @@
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--cream);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.icon:hover {
+  stroke: var(--pink);
+}

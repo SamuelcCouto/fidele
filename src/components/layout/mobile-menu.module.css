@@ -1,0 +1,143 @@
+/* Overlay próprio. Antes o menu reaproveitava `.cart-overlay` do carrinho,
+   acoplando os dois componentes por um nome de classe global. */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-drawer-scrim);
+  background: var(--scrim);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base) ease;
+}
+
+.scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: -350px;
+  width: 300px;
+  max-width: 85vw;
+  height: 100vh;
+  z-index: var(--z-drawer);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-right: 1px solid var(--line);
+  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.8);
+  transition: left var(--transition-base) ease;
+}
+
+.scrim.open .drawer {
+  left: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-5) var(--space-8);
+  border-bottom: 1px solid var(--line);
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--pink);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.close {
+  background: none;
+  border: none;
+  color: var(--cream);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.close:hover {
+  color: var(--pink);
+}
+
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-8);
+  overflow-y: auto;
+}
+
+.link {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: var(--cream);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--pink);
+  padding-left: 5px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-8);
+  border-top: 1px solid var(--line);
+  background: none;
+  color: var(--cream);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.footer svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---- conteúdo dos modais ---- */
+.steps {
+  margin: 0;
+  padding-left: var(--space-5);
+  text-align: left;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.steps li + li {
+  margin-top: var(--space-3);
+}
+
+.faq {
+  max-height: 40vh;
+  overflow-y: auto;
+  padding-right: var(--space-3);
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.faq dt {
+  font-weight: bold;
+}
+
+.faq dd {
+  margin: var(--space-1) 0 var(--space-4);
+}

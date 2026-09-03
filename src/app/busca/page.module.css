@@ -1,0 +1,15 @@
+.main {
+  min-height: 70vh;
+  padding: var(--space-16) 5%;
+}
+
+.empty {
+  margin-top: 50px;
+  text-align: center;
+}
+
+.emptyText {
+  margin-bottom: var(--space-8);
+  color: var(--cream);
+  font-size: 1.2rem;
+}

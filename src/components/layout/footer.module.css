@@ -1,0 +1,122 @@
+.footer {
+  margin-top: var(--space-10);
+  background: var(--footer-bg);
+  border-top: 1px solid var(--line);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: var(--space-8);
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: var(--space-12) var(--gutter) var(--space-6);
+}
+
+.grid h4 {
+  margin: 0 0 14px;
+  color: var(--pink-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.grid ul {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.logo {
+  margin-bottom: var(--space-3);
+  color: var(--pink);
+  font-family: var(--font-brand);
+  font-size: 20px;
+  -webkit-text-stroke: 1px #000;
+  filter: var(--glow-soft);
+}
+
+.tagline {
+  max-width: 260px;
+  font-size: 13px;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
+.newsletter {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.newsletter input {
+  flex: 1;
+  padding: var(--space-3);
+  background: var(--bg-elev);
+  color: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+}
+
+.newsletter button {
+  padding: 0 14px;
+  background: var(--pink);
+  color: var(--on-pink);
+  border: 1px solid var(--pink);
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.spaced {
+  margin-top: 18px;
+}
+
+.payIcons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.payIcons span {
+  padding: var(--space-1) var(--space-2);
+  color: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.bottom {
+  padding: var(--space-4) var(--gutter);
+  border-top: 1px solid var(--line);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .newsletter {
+    flex-direction: column;
+  }
+
+  .newsletter button {
+    padding: var(--space-3);
+  }
+}

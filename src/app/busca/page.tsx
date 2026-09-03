@@ -1,53 +1,45 @@
-import { productsData } from "@/data/products";
-import ProductCard from "@/components/ProductCard";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { ProductGrid } from "@/components/product/product-grid";
+import { Button } from "@/components/ui/button";
+import { SectionTitle } from "@/components/ui/section-title";
+import { allProducts, searchProducts } from "@/lib/search-products";
+import s from "./page.module.css";
 
-export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  // Pega a palavra que a pessoa digitou na URL (o ?q=...)
-  const resolvedParams = await searchParams;
-  const query = (resolvedParams.q || "").toLowerCase();
+export const metadata: Metadata = {
+  title: "Busca",
+};
 
-  // Transforma o nosso objeto de produtos em uma lista (Array) para podermos filtrar
-  const allProducts = Object.values(productsData);
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
+  const query = q?.trim() ?? "";
 
-  // Filtra os produtos: verifica se a palavra digitada tem no Nome ou na Descrição
-  const results = allProducts.filter((product) => {
-    const matchName = product.name.toLowerCase().includes(query);
-    const matchDesc = product.description.some((linha) => linha.toLowerCase().includes(query));
-    return matchName || matchDesc;
-  });
+  // Mesma função usada pelo autocomplete do header — antes cada tela
+  // implementava o próprio filtro.
+  const results = query ? searchProducts(query) : allProducts();
 
   return (
-    <main style={{ padding: '60px 5%', minHeight: '70vh' }}>
-      
-      <div className="section-title centered" style={{ marginBottom: '40px' }}>
-        <h2>Resultados para: <span>"{query}"</span></h2>
-      </div>
+    <main className={s.main}>
+      <SectionTitle>
+        Resultados para: <em>{query}</em>
+      </SectionTitle>
 
       {results.length > 0 ? (
-        <div className="product-grid">
-          {/* Faz um loop só nos produtos que bateram com a pesquisa */}
-          {results.map((product) => (
-            <ProductCard 
-              key={product.id} 
-              name={product.name} 
-              price={product.price} 
-              image={`/img/${product.imagePrefix}1.jpg`} 
-              link={`/${product.id}`} 
-            />
-          ))}
-        </div>
+        <ProductGrid products={results} />
       ) : (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-          <p style={{ color: 'var(--cream)', fontSize: '1.2rem', marginBottom: '30px' }}>
+        <div className={s.empty}>
+          <p className={s.emptyText}>
             Poxa, não encontramos nenhuma peça com esse nome. 💔
           </p>
           <Link href="/#produtos">
-            <button className="btn-outline">Ver todos os produtos</button>
+            <Button variant="outline">Ver todos os produtos</Button>
           </Link>
         </div>
       )}
-
     </main>
   );
 }

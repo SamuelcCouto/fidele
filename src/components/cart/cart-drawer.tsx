@@ -39,11 +39,11 @@ export function CartDrawer() {
       }
 
       const data = (await response.json()) as CheckoutResponse;
-      if (!data.init_point) {
-        throw new Error("Resposta do checkout sem init_point");
+      if (!data.checkoutUrl) {
+        throw new Error("Resposta do checkout sem checkoutUrl");
       }
 
-      window.location.href = data.init_point;
+      window.location.href = data.checkoutUrl;
     } catch (cause) {
       console.error("Erro no checkout:", cause);
       setError("Não conseguimos gerar o pagamento. Tente novamente.");

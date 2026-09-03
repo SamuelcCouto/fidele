@@ -1,0 +1,25 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-16) var(--gutter) var(--space-6);
+  max-width: var(--container);
+  margin: 0 auto;
+  position: relative;
+  z-index: var(--z-content);
+  scroll-margin-top: var(--space-20);
+}
+
+.heading {
+  margin: 0;
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 28px;
+}
+
+/* Trecho em destaque, marcado com <em> no JSX. */
+.heading em {
+  font-style: normal;
+  color: var(--pink);
+  filter: drop-shadow(0 0 10px rgba(255, 31, 141, 0.4));
+}

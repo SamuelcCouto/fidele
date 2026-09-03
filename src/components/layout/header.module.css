@@ -1,0 +1,49 @@
+.header {
+  /* O header v1 duplicado no globals.css matava este sticky. */
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  padding: 15px 5%;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.burger {
+  display: none;
+}
+
+/* Hambúrguer e lupa só no mobile; a busca inline só no desktop. */
+@media (max-width: 768px) {
+  .burger,
+  .searchToggle {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  .searchToggle {
+    display: none;
+  }
+}

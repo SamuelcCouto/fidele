@@ -1,0 +1,36 @@
+.field {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-background);
+  overflow: hidden;
+  pointer-events: none;
+  transition: transform 0.4s ease-out;
+}
+
+.field img {
+  position: absolute;
+  will-change: transform;
+  animation-name: float;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--rot));
+  }
+  50% {
+    transform: translateY(-22px) rotate(var(--rot));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field img {
+    animation: none;
+  }
+
+  .field {
+    transition: none;
+  }
+}

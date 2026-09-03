@@ -99,3 +99,11 @@ export function updateCart(
   cachedCart = next;
   window.dispatchEvent(new Event(CART_EVENT));
 }
+
+/**
+ * Esvazia o carrinho. Usado quando o pagamento é confirmado — o comprador não
+ * pode voltar para a loja e reencontrar as peças que acabou de pagar.
+ */
+export function clearCart(): void {
+  updateCart(() => EMPTY);
+}

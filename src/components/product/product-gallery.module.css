@@ -64,33 +64,41 @@
 }
 
 @media (max-width: 900px) {
-  /* Foto grande em cima, faixa de miniaturas rolando embaixo. */
+  /* Mesma leitura do desktop: trilha de miniaturas ao lado da foto grande,
+     as duas visíveis ao mesmo tempo.
+
+     Antes a trilha virava faixa horizontal embaixo da foto. Mostrava 4 das 8
+     fotos e não dava pista de que havia mais — o cliente precisava adivinhar
+     que aquilo rolava para o lado. Ao lado, a trilha se anuncia sozinha. */
   .gallery {
-    flex-direction: column-reverse;
+    gap: var(--space-3);
   }
 
   .thumbnails {
-    flex-direction: row;
-    width: 100%;
+    width: 54px;
+    min-width: 54px;
+    /* A altura vem do quadro da foto: as duas colunas terminam juntas. */
     max-height: none;
-    overflow-x: auto;
-    padding-bottom: var(--space-2);
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .thumb {
-    width: 70px;
-    flex: 0 0 auto;
+    gap: var(--space-2);
   }
 
   .main {
-    aspect-ratio: auto;
-    max-height: 60vh;
-    height: 60vh;
+    aspect-ratio: 4 / 5;
+    height: auto;
+    max-height: none;
   }
 
-  /* No celular a peça inteira precisa caber, sem cortar as bordas. */
+  /* A peça inteira precisa caber, sem cortar as bordas. As fotos têm fundo
+     branco, igual ao do quadro, então o encaixe não deixa borda aparente. */
   .mainImage {
     object-fit: contain;
+  }
+}
+
+/* Celular estreito: a trilha cede alguns pixels para a foto não encolher. */
+@media (max-width: 380px) {
+  .thumbnails {
+    width: 46px;
+    min-width: 46px;
   }
 }

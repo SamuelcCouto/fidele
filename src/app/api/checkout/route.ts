@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { DELIVERY_AREA_LABEL, isDeliverable } from "@/config/delivery";
 import { checkoutRoutes } from "@/config/site";
 import { productsData } from "@/data/products";
 import { getBaseUrl, isPubliclyReachable } from "@/lib/base-url";
+import { cepDigits, lookupCep } from "@/lib/cep";
 import { formatPrice } from "@/lib/format-price";
 import {
   createPaymentLink,
@@ -27,6 +29,7 @@ const checkoutSchema = z.object({
     )
     .min(1)
     .max(MAX_LINE_ITEMS),
+  cep: z.string().min(8).max(9),
 });
 
 export async function POST(request: Request) {
@@ -77,6 +80,40 @@ export async function POST(request: Request) {
     (total, item) => total + item.price * item.quantity,
     0,
   );
+
+  // Área de entrega: o carrinho já checa e bloqueia o botão, mas isso é UI —
+  // um POST direto passaria por cima. A decisão que vale é esta.
+  const cep = cepDigits(parsed.data.cep);
+
+  try {
+    const address = await lookupCep(cep);
+
+    if (!address) {
+      return NextResponse.json(
+        { error: "CEP não encontrado." },
+        { status: 400 },
+      );
+    }
+
+    if (!isDeliverable(address.city, address.uf)) {
+      return NextResponse.json(
+        {
+          error: `No momento entregamos apenas em ${DELIVERY_AREA_LABEL}.`,
+          city: address.city,
+          uf: address.uf,
+        },
+        { status: 422 },
+      );
+    }
+  } catch (cause) {
+    // Sem confirmar a cidade não dá para cobrar: seria vender uma entrega que
+    // talvez não exista. O carrinho oferece o WhatsApp nesse caso.
+    console.error("[checkout] falha ao verificar o CEP:", cause);
+    return NextResponse.json(
+      { error: "Não foi possível verificar seu CEP agora." },
+      { status: 503 },
+    );
+  }
 
   const baseUrl = getBaseUrl();
   const webhookUrl = `${baseUrl}${checkoutRoutes.webhook}`;

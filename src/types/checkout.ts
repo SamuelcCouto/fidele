@@ -15,6 +15,8 @@ export interface CheckoutItemInput {
 
 export interface CheckoutRequest {
   items: CheckoutItemInput[];
+  /** Oito dígitos, sem máscara. Define se a loja entrega no endereço. */
+  cep: string;
 }
 
 export interface CheckoutResponse {

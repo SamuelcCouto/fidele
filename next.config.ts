@@ -57,7 +57,16 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      {
+        // Resposta de API carrega dado do cliente (o CEP, a cidade dele).
+        // O padrão do Next é "public, max-age=0, must-revalidate", que
+        // autoriza cache compartilhado a guardar uma cópia.
+        source: "/api/:path*",
+        headers: [{ key: "Cache-Control", value: "no-store" }],
+      },
+    ];
   },
 };
 

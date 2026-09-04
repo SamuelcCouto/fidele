@@ -4,6 +4,7 @@ import { ProductGrid } from "@/components/product/product-grid";
 import { Button } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/section-title";
 import { catalogItems, searchCatalog } from "@/lib/catalog";
+import { firstParam, type QueryValue } from "@/lib/search-params";
 import s from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -13,10 +14,10 @@ export const metadata: Metadata = {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: QueryValue }>;
 }) {
   const { q } = await searchParams;
-  const query = q?.trim() ?? "";
+  const query = firstParam(q)?.trim() ?? "";
 
   // Mesma função usada pelo autocomplete do header — antes cada tela
   // implementava o próprio filtro.

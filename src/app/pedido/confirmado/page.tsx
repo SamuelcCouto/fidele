@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { whatsappUrl } from "@/config/site";
 import { checkPayment } from "@/lib/infinitepay";
 import { safeReceiptUrl } from "@/lib/receipt-url";
+import { firstParam, type QueryValue } from "@/lib/search-params";
 import s from "@/app/status.module.css";
 
 export const metadata: Metadata = {
@@ -14,11 +15,11 @@ export const metadata: Metadata = {
 };
 
 type SearchParams = Promise<{
-  order_nsu?: string;
-  transaction_nsu?: string;
-  slug?: string;
-  capture_method?: string;
-  receipt_url?: string;
+  order_nsu?: QueryValue;
+  transaction_nsu?: QueryValue;
+  slug?: QueryValue;
+  capture_method?: QueryValue;
+  receipt_url?: QueryValue;
 }>;
 
 export default async function OrderReturnPage({
@@ -27,18 +28,23 @@ export default async function OrderReturnPage({
   searchParams: SearchParams;
 }) {
   const params = await searchParams;
-  const receiptUrl = safeReceiptUrl(params.receipt_url);
+
+  // Parâmetro repetido na URL chega como array; só o primeiro valor conta.
+  const orderNsu = firstParam(params.order_nsu);
+  const transactionNsu = firstParam(params.transaction_nsu);
+  const slug = firstParam(params.slug);
+  const receiptUrl = safeReceiptUrl(firstParam(params.receipt_url));
 
   // A volta do checkout não prova pagamento: os parâmetros vêm na URL e são
   // editáveis. Quem decide é a InfinitePay, consultada aqui no servidor.
   let status: "paid" | "pending" | "unknown" = "unknown";
 
-  if (params.order_nsu && params.transaction_nsu && params.slug) {
+  if (orderNsu && transactionNsu && slug) {
     try {
       const payment = await checkPayment({
-        orderNsu: params.order_nsu,
-        transactionNsu: params.transaction_nsu,
-        slug: params.slug,
+        orderNsu,
+        transactionNsu,
+        slug,
       });
 
       status = payment.success && payment.paid ? "paid" : "pending";

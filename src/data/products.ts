@@ -22,7 +22,8 @@ export const productsData: Record<string, Product> = {
     priceInCents: 13000,
     description: ["Modelo: Regata orvalho"],
     sizes: ["P", "M", "G", "GG"],
-    colors: [{ name: "Branco", images: img("regata", 1, 2, 3, 4, 5, 6, 7) }],
+    // regata2 é a frente (estampa FIDÈLE); regata1 são as costas.
+    colors: [{ name: "Branco", images: img("regata", 2, 1, 3, 4, 5, 6, 7) }],
   },
   polo: {
     id: "polo",
@@ -91,7 +92,8 @@ export const productsData: Record<string, Product> = {
       // eva1 ficou de fora: duas modelos com cores diferentes na mesma foto.
       { name: "Preto", images: img("eva", 7, 8, 2) },
       { name: "Cinza", images: img("eva", 4, 5, 6, 3) },
-      { name: "Bege", images: img("eva", 9, 10, 13) },
+      // eva10 traz o bordado FL FIDÈLE; eva9 é o lado liso.
+      { name: "Bege", images: img("eva", 10, 9, 13) },
       { name: "Terracota", images: img("eva", 11, 12, 14) },
     ],
   },

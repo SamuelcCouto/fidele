@@ -6,6 +6,7 @@ import { getProduct } from "@/lib/catalog";
 import { getBaseUrl, isPubliclyReachable } from "@/lib/base-url";
 import { cepDigits, lookupCep } from "@/lib/cep";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { rejectCrossSiteRequest } from "@/lib/request-guard";
 import { formatPrice } from "@/lib/format-price";
 import {
   createPaymentLink,
@@ -48,6 +49,11 @@ const CHECKOUT_LIMITS = [
 ];
 
 export async function POST(request: Request) {
+  // Antes do limitador: rejeitar requisição forjada de outro site custa
+  // duas leituras de cabeçalho e não queima a cota de um cliente real.
+  const crossSite = rejectCrossSiteRequest(request);
+  if (crossSite) return crossSite;
+
   const limit = rateLimit(`checkout:${clientIp(request)}`, CHECKOUT_LIMITS);
 
   if (!limit.ok) {

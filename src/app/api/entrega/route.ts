@@ -3,6 +3,7 @@ import { z } from "zod";
 import { isDeliverable } from "@/config/delivery";
 import { cepDigits, lookupCep } from "@/lib/cep";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { rejectCrossSiteRequest } from "@/lib/request-guard";
 import type { DeliveryCheckResponse } from "@/types/delivery";
 
 /**
@@ -32,6 +33,11 @@ const DELIVERY_LIMITS = [
 ];
 
 export async function POST(request: Request) {
+  // Antes do limitador: rejeitar requisição forjada de outro site custa
+  // duas leituras de cabeçalho e não queima a cota de um cliente real.
+  const crossSite = rejectCrossSiteRequest(request);
+  if (crossSite) return crossSite;
+
   const limit = rateLimit(`entrega:${clientIp(request)}`, DELIVERY_LIMITS);
 
   if (!limit.ok) {

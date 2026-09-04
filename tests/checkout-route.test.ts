@@ -212,7 +212,10 @@ describe("POST /api/checkout — adulteração", () => {
     const response = await POST(
       new Request("https://loja.test/api/checkout", {
         method: "POST",
-        headers: { "x-forwarded-for": "198.51.100.250" },
+        headers: {
+          "content-type": "application/json",
+          "x-forwarded-for": "198.51.100.250",
+        },
         body: "nao sou json",
       }),
     );
@@ -269,6 +272,84 @@ describe("POST /api/checkout — limitador por IP", () => {
   });
 });
 
+describe("POST /api/checkout — CSRF", () => {
+  function postBruto(headers: Record<string, string>) {
+    return POST(
+      new Request("https://loja.test/api/checkout", {
+        method: "POST",
+        headers: { "x-forwarded-for": "198.51.100.240", ...headers },
+        body: JSON.stringify(PEDIDO_VALIDO),
+      }),
+    );
+  }
+
+  // Formulário cross-site só consegue mandar estes três tipos. Aceitar
+  // qualquer um deles é o que tornava a rota forjável de fora.
+  it.each([
+    "text/plain",
+    "application/x-www-form-urlencoded",
+    "multipart/form-data",
+  ])("recusa Content-Type %s com 415", async (contentType) => {
+    const fetchMock = mockRede();
+    const response = await postBruto({ "content-type": contentType });
+
+    expect(response.status).toBe(415);
+    expect(criouCobranca(fetchMock)).toBe(false);
+  });
+
+  it("recusa requisição sem Content-Type", async () => {
+    const fetchMock = mockRede();
+    expect((await postBruto({})).status).toBe(415);
+    expect(criouCobranca(fetchMock)).toBe(false);
+  });
+
+  it("recusa Origin de outro site", async () => {
+    const fetchMock = mockRede();
+    const response = await postBruto({
+      "content-type": "application/json",
+      origin: "https://site-do-atacante.com",
+    });
+
+    expect(response.status).toBe(403);
+    expect(criouCobranca(fetchMock)).toBe(false);
+  });
+
+  it("recusa Origin nulo, que é o de iframe em sandbox", async () => {
+    mockRede();
+    const response = await postBruto({
+      "content-type": "application/json",
+      origin: "null",
+    });
+    expect(response.status).toBe(403);
+  });
+
+  it("aceita Origin da própria loja", async () => {
+    mockRede();
+    const response = await postBruto({
+      "content-type": "application/json",
+      origin: "https://loja.test",
+      host: "loja.test",
+    });
+    expect(response.status).toBe(200);
+  });
+
+  // curl e servidor a servidor não mandam Origin, e sem navegador não existe
+  // CSRF: não há sessão de vítima para usar.
+  it("aceita requisição sem Origin", async () => {
+    mockRede();
+    const response = await postBruto({ "content-type": "application/json" });
+    expect(response.status).toBe(200);
+  });
+
+  it("aceita Content-Type com charset", async () => {
+    mockRede();
+    const response = await postBruto({
+      "content-type": "application/json; charset=utf-8",
+    });
+    expect(response.status).toBe(200);
+  });
+});
+
 describe("POST /api/checkout — falha da InfinitePay", () => {
   it("devolve erro genérico ao cliente, sem detalhe de integração", async () => {
     mockRede({ linkFalha: true });
@@ -278,6 +359,24 @@ describe("POST /api/checkout — falha da InfinitePay", () => {
     await expect(response.json()).resolves.toEqual({
       error: "Falha ao gerar o pagamento.",
     });
+  });
+
+  // Sem esta trava, uma resposta inesperada da API viraria redirecionamento
+  // aberto: o comprador sairia da loja para onde o corpo mandasse.
+  it("não redireciona para URL fora do domínio da InfinitePay", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string | URL, _init?: RequestInit) => {
+        const href = String(url);
+        if (href.includes("viacep")) {
+          return json({ localidade: "Goiânia", uf: "GO" });
+        }
+        return json({ url: "https://site-do-golpe.example.com/pagar" });
+      }),
+    );
+
+    const response = await post(PEDIDO_VALIDO);
+    expect(response.status).toBe(500);
   });
 
   it("falha quando o handle não está configurado", async () => {

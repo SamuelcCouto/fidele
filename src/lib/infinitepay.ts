@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isInfinitePayUrl } from "@/lib/infinitepay-hosts";
 
 /**
  * Cliente da API de Checkout da InfinitePay.
@@ -134,6 +135,12 @@ export async function createPaymentLink(
     },
     paymentLinkSchema,
   );
+
+  // O comprador é redirecionado para esta URL. Conferir o destino evita que
+  // uma resposta inesperada da API vire redirecionamento aberto na loja.
+  if (!isInfinitePayUrl(url)) {
+    throw new InfinitePayError(`/links devolveu URL fora do domínio: ${url}`);
+  }
 
   return url;
 }

@@ -1,7 +1,6 @@
 import { siteConfig } from "@/config/site";
 import s from "./footer.module.css";
 
-const shopLinks = ["Tanks", "Camisetas", "Bags", "Lançamentos"];
 const helpLinks = [
   "Trocas e devoluções",
   "Prazo de entrega",
@@ -27,17 +26,6 @@ export function Footer() {
             />
             <button type="button">Entrar</button>
           </div>
-        </div>
-
-        <div>
-          <h4>Loja</h4>
-          <ul>
-            {shopLinks.map((label) => (
-              <li key={label}>
-                <a href="#">{label}</a>
-              </li>
-            ))}
-          </ul>
         </div>
 
         <div>

@@ -77,44 +77,6 @@
 }
 
 /* ---- filtros ---- */
-.pills {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-3);
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 var(--gutter) var(--space-8);
-  position: relative;
-  z-index: var(--z-content);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.pills::-webkit-scrollbar {
-  display: none;
-}
-
-.pill {
-  padding: var(--space-2) var(--space-5);
-  background: transparent;
-  color: var(--cream);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.pill.active {
-  background: var(--pink);
-  color: var(--on-pink);
-  border-color: var(--pink);
-  box-shadow: var(--glow);
-}
-
 /* ---- quem somos ---- */
 .about {
   position: relative;

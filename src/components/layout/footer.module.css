@@ -6,7 +6,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  grid-template-columns: 1.4fr 1fr 1.2fr;
   gap: var(--space-8);
   max-width: var(--container);
   margin: 0 auto;

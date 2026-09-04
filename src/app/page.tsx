@@ -4,8 +4,6 @@ import { SectionTitle } from "@/components/ui/section-title";
 import { catalogItems } from "@/lib/catalog";
 import s from "./page.module.css";
 
-const categories = ["Parte de cima", "Parte de baixo", "Fitness"];
-
 export default function Home() {
   // A vitrine sai do catálogo, um card por cor: com poucos produtos, as
   // variações dão volume à grade e o cliente já vê a cor antes de entrar.
@@ -41,18 +39,6 @@ export default function Home() {
         <SectionTitle id="produtos">
           Mais <em>Desejados</em>
         </SectionTitle>
-
-        <div className={s.pills}>
-          {categories.map((category, index) => (
-            <button
-              key={category}
-              type="button"
-              className={index === 0 ? `${s.pill} ${s.active}` : s.pill}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
 
         <ProductGrid items={items} />
 

@@ -18,7 +18,13 @@ export interface CheckoutRequest {
 }
 
 export interface CheckoutResponse {
-  init_point: string;
+  /** URL do checkout hospedado da InfinitePay. */
+  checkoutUrl: string;
+  /** Identificador do pedido, ecoado de volta no retorno e no webhook. */
+  orderNsu: string;
 }
 
 export const MAX_QUANTITY_PER_ITEM = 20;
+
+/** Teto de linhas distintas por pedido — o carrinho real nunca chega perto. */
+export const MAX_LINE_ITEMS = 50;

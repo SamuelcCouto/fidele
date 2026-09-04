@@ -1,12 +1,13 @@
+import type { CatalogItem } from "@/lib/catalog";
 import { ProductCard } from "./product-card";
-import type { Product } from "@/types/product";
 import s from "./product-grid.module.css";
 
-export function ProductGrid({ products }: { products: Product[] }) {
+export function ProductGrid({ items }: { items: CatalogItem[] }) {
   return (
     <div className={s.grid}>
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+      {items.map((item) => (
+        // O href é único por produto+cor — serve de chave sem inventar outra.
+        <ProductCard key={item.href} item={item} />
       ))}
     </div>
   );

@@ -17,6 +17,10 @@ function isCartItem(value: unknown): value is CartItem {
     Number.isFinite(item.priceInCents) &&
     typeof item.image === "string" &&
     isSize(item.size) &&
+    // Carrinho salvo antes das cores não tem este campo e é descartado na
+    // primeira leitura. Preferível a deixar passar um pedido sem cor.
+    typeof item.color === "string" &&
+    item.color.length > 0 &&
     typeof item.quantity === "number" &&
     Number.isInteger(item.quantity) &&
     item.quantity > 0

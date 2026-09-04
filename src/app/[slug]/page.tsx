@@ -2,41 +2,45 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AddToCart } from "@/components/product/add-to-cart";
 import { ProductGallery } from "@/components/product/product-gallery";
-import { productsData } from "@/data/products";
+import { catalogSlugs, resolveSlug, toCatalogItem } from "@/lib/catalog";
 import { formatInstallments, formatPrice } from "@/lib/format-price";
-import { productCover } from "@/lib/product-image";
 import s from "./page.module.css";
 
 type Params = { params: Promise<{ slug: string }> };
 
-// O catálogo é estático: as 7 páginas de produto são pré-renderizadas.
+// O catálogo é estático: cada produto e cada variação de cor viram páginas
+// pré-renderizadas.
 export function generateStaticParams() {
-  return Object.keys(productsData).map((slug) => ({ slug }));
+  return catalogSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const product = productsData[slug];
+  const resolved = resolveSlug(slug);
 
-  if (!product) return {};
+  if (!resolved) return {};
+
+  const item = toCatalogItem(resolved.product, resolved.color);
 
   return {
-    title: product.name,
-    description: product.description[0] ?? product.name,
+    title: item.title,
+    description: resolved.product.description[0] ?? item.title,
     openGraph: {
-      title: product.name,
-      images: [productCover(product)],
+      title: item.title,
+      images: [item.image],
     },
   };
 }
 
 export default async function ProductPage({ params }: Params) {
   const { slug } = await params;
-  const product = productsData[slug];
+  const resolved = resolveSlug(slug);
 
-  if (!product) {
+  if (!resolved) {
     notFound();
   }
+
+  const { product, color } = resolved;
 
   return (
     <main>
@@ -57,7 +61,8 @@ export default async function ProductPage({ params }: Params) {
               ))}
             </div>
 
-            <AddToCart product={product} />
+            {/* A cor vem selecionada conforme o card clicado na vitrine. */}
+            <AddToCart product={product} initialColor={color.name} />
           </div>
         </div>
       </section>

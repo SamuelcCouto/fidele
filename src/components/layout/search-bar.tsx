@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+import { searchCatalog } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format-price";
-import { productCover } from "@/lib/product-image";
-import { searchProducts } from "@/lib/search-products";
 import s from "./search-bar.module.css";
 
 interface SearchBarProps {
@@ -23,7 +22,7 @@ export function SearchBar({ variant = "desktop", onNavigate }: SearchBarProps) {
 
   // Deriva do texto em vez de guardar resultados em outro useState —
   // eram três estados para uma informação só.
-  const results = useMemo(() => searchProducts(query), [query]);
+  const results = useMemo(() => searchCatalog(query), [query]);
   const showDropdown = isFocused && query.trim().length > 0;
 
   const finish = () => {
@@ -40,8 +39,8 @@ export function SearchBar({ variant = "desktop", onNavigate }: SearchBarProps) {
     finish();
   };
 
-  const goToProduct = (id: string) => {
-    router.push(`/${id}`);
+  const goToProduct = (href: string) => {
+    router.push(href);
     finish();
   };
 
@@ -85,16 +84,16 @@ export function SearchBar({ variant = "desktop", onNavigate }: SearchBarProps) {
         onMouseDown={(event) => event.preventDefault()}
       >
         {results.length > 0 ? (
-          results.map((product) => (
+          results.map((item) => (
             <button
-              key={product.id}
+              key={item.href}
               type="button"
               className={s.result}
-              onClick={() => goToProduct(product.id)}
+              onClick={() => goToProduct(item.href)}
             >
               <span className={s.resultThumb}>
                 <Image
-                  src={productCover(product)}
+                  src={item.image}
                   alt=""
                   fill
                   sizes="45px"
@@ -102,9 +101,9 @@ export function SearchBar({ variant = "desktop", onNavigate }: SearchBarProps) {
                 />
               </span>
               <span className={s.resultInfo}>
-                <span className={s.resultName}>{product.name}</span>
+                <span className={s.resultName}>{item.title}</span>
                 <span className={s.resultPrice}>
-                  {formatPrice(product.priceInCents)}
+                  {formatPrice(item.product.priceInCents)}
                 </span>
               </span>
             </button>

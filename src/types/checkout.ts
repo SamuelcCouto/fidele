@@ -10,6 +10,8 @@ import type { Size } from "@/types/product";
 export interface CheckoutItemInput {
   id: string;
   size: Size;
+  /** Nome da cor. O servidor confere que ela pertence ao produto. */
+  color: string;
   quantity: number;
 }
 

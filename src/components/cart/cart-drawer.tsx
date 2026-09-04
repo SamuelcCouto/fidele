@@ -28,7 +28,12 @@ export function CartDrawer() {
     // Só identificação, quantidade e CEP seguem para o servidor: o preço é
     // recalculado lá a partir do catálogo, e a cidade é reconsultada no ViaCEP.
     const payload: CheckoutRequest = {
-      items: cart.map(({ id, size, quantity }) => ({ id, size, quantity })),
+      items: cart.map(({ id, size, color, quantity }) => ({
+        id,
+        size,
+        color,
+        quantity,
+      })),
       cep: delivery.cep,
     };
 
@@ -98,7 +103,10 @@ export function CartDrawer() {
             <p className={s.empty}>Seu carrinho está vazio.</p>
           ) : (
             cart.map((item) => (
-              <CartLineItem key={`${item.id}-${item.size}`} item={item} />
+              <CartLineItem
+                key={`${item.id}-${item.size}-${item.color}`}
+                item={item}
+              />
             ))
           )}
         </div>

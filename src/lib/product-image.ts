@@ -12,7 +12,10 @@ export function productImages(product: Product): string[] {
   );
 }
 
-/** Foto usada na vitrine e na miniatura do carrinho. */
+/**
+ * Capa padrão do produto — a foto da primeira cor. Onde a cor escolhida é
+ * conhecida, use a imagem dela em vez desta.
+ */
 export function productCover(product: Product): string {
-  return product.coverImage ?? productImage(product.imagePrefix, 1);
+  return product.colors[0].image;
 }

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ProductGrid } from "@/components/product/product-grid";
 import { Button } from "@/components/ui/button";
 import { SectionTitle } from "@/components/ui/section-title";
-import { allProducts, searchProducts } from "@/lib/search-products";
+import { catalogItems, searchCatalog } from "@/lib/catalog";
 import s from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default async function SearchPage({
 
   // Mesma função usada pelo autocomplete do header — antes cada tela
   // implementava o próprio filtro.
-  const results = query ? searchProducts(query) : allProducts();
+  const results = query ? searchCatalog(query) : catalogItems();
 
   return (
     <main className={s.main}>
@@ -29,7 +29,7 @@ export default async function SearchPage({
       </SectionTitle>
 
       {results.length > 0 ? (
-        <ProductGrid products={results} />
+        <ProductGrid items={results} />
       ) : (
         <div className={s.empty}>
           <p className={s.emptyText}>

@@ -23,14 +23,16 @@ export function CartLineItem({ item }: { item: CartItem }) {
 
       <div className={s.info}>
         <span className={s.title}>{item.name}</span>
-        <span className={s.size}>Tam: {item.size}</span>
+        <span className={s.size}>
+          {item.color} · Tam: {item.size}
+        </span>
 
         <div className={s.quantity}>
           <button
             type="button"
             className={s.qtyButton}
             aria-label={`Diminuir quantidade de ${item.name}`}
-            onClick={() => updateQuantity(item.id, item.size, -1)}
+            onClick={() => updateQuantity(item.id, item.size, item.color, -1)}
           >
             −
           </button>
@@ -39,7 +41,7 @@ export function CartLineItem({ item }: { item: CartItem }) {
             type="button"
             className={s.qtyButton}
             aria-label={`Aumentar quantidade de ${item.name}`}
-            onClick={() => updateQuantity(item.id, item.size, 1)}
+            onClick={() => updateQuantity(item.id, item.size, item.color, 1)}
           >
             +
           </button>
@@ -52,7 +54,7 @@ export function CartLineItem({ item }: { item: CartItem }) {
         <button
           type="button"
           className={s.remove}
-          onClick={() => removeFromCart(item.id, item.size)}
+          onClick={() => removeFromCart(item.id, item.size, item.color)}
         >
           Remover todos
         </button>

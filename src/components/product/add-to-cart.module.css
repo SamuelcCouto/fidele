@@ -77,3 +77,35 @@
     transform: translateX(-5px);
   }
 }
+
+/* Bloco da cor: mesmo desenho dos tamanhos, mas em pílula — nome de cor não
+   cabe num botão redondo de 44px. */
+.colors {
+  margin-bottom: var(--space-6);
+}
+
+.color {
+  height: 44px;
+  padding: 0 var(--space-5);
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.color:hover,
+.color:focus-visible {
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+.color.selected {
+  border-color: var(--pink);
+  color: var(--pink);
+  box-shadow: var(--glow-soft);
+}

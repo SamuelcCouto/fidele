@@ -20,8 +20,13 @@ import type { Size } from "@/types/product";
 interface CartContextValue {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string, size: Size) => void;
-  updateQuantity: (id: string, size: Size, amount: number) => void;
+  removeFromCart: (id: string, size: Size, color: string) => void;
+  updateQuantity: (
+    id: string,
+    size: Size,
+    color: string,
+    amount: number,
+  ) => void;
   cartCount: number;
   cartTotalInCents: number;
   cartTotal: string;
@@ -46,7 +51,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addToCart = (newItem: CartItem) => {
     updateCart((current) => {
       const index = current.findIndex(
-        (item) => item.id === newItem.id && item.size === newItem.size,
+        (item) =>
+          item.id === newItem.id &&
+          item.size === newItem.size &&
+          item.color === newItem.color,
       );
 
       if (index < 0) return [...current, newItem];
@@ -62,17 +70,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeFromCart = (id: string, size: Size) => {
+  const removeFromCart = (id: string, size: Size, color: string) => {
     updateCart((current) =>
-      current.filter((item) => !(item.id === id && item.size === size)),
+      current.filter(
+        (item) =>
+          !(item.id === id && item.size === size && item.color === color),
+      ),
     );
   };
 
-  const updateQuantity = (id: string, size: Size, amount: number) => {
+  const updateQuantity = (
+    id: string,
+    size: Size,
+    color: string,
+    amount: number,
+  ) => {
     updateCart((current) =>
       current
         .map((item) =>
-          item.id === id && item.size === size
+          item.id === id && item.size === size && item.color === color
             ? { ...item, quantity: item.quantity + amount }
             : item,
         )

@@ -1,15 +1,15 @@
 import Image from "next/image";
 import { ProductGrid } from "@/components/product/product-grid";
 import { SectionTitle } from "@/components/ui/section-title";
-import { allProducts } from "@/lib/search-products";
+import { catalogItems } from "@/lib/catalog";
 import s from "./page.module.css";
 
 const categories = ["Parte de cima", "Parte de baixo", "Fitness"];
 
 export default function Home() {
-  // A vitrine sai do catálogo — antes os 7 produtos eram redigitados aqui à
-  // mão e a foto da regata já tinha divergido da usada nas outras telas.
-  const products = allProducts();
+  // A vitrine sai do catálogo, um card por cor: com poucos produtos, as
+  // variações dão volume à grade e o cliente já vê a cor antes de entrar.
+  const items = catalogItems();
 
   return (
     <>
@@ -54,7 +54,7 @@ export default function Home() {
           ))}
         </div>
 
-        <ProductGrid products={products} />
+        <ProductGrid items={items} />
 
         <section id="quem-somos" className={s.about}>
           <h3>

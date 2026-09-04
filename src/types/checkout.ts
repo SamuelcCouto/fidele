@@ -32,3 +32,10 @@ export const MAX_QUANTITY_PER_ITEM = 20;
 
 /** Teto de linhas distintas por pedido — o carrinho real nunca chega perto. */
 export const MAX_LINE_ITEMS = 50;
+
+/**
+ * Teto de caracteres para os campos de texto do pedido. Id e cor são slugs e
+ * nomes curtos; o limite existe para o servidor não ecoar de volta um valor
+ * gigante na mensagem de erro.
+ */
+export const MAX_FIELD_LENGTH = 64;

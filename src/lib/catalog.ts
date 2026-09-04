@@ -27,6 +27,19 @@ export function allProducts(): Product[] {
   return Object.values(productsData);
 }
 
+/**
+ * Busca no catálogo por id.
+ *
+ * `productsData` é um objeto literal, então `productsData["__proto__"]`
+ * devolve o Object.prototype — que é truthy e passa por qualquer checagem de
+ * existência, quebrando o código seguinte com 500 numa rota pública. O mesmo
+ * vale para "constructor", "toString", "valueOf" e "hasOwnProperty".
+ * Só propriedade própria conta como produto.
+ */
+export function getProduct(id: string): Product | undefined {
+  return Object.hasOwn(productsData, id) ? productsData[id] : undefined;
+}
+
 export function toCatalogItem(
   product: Product,
   color: ProductColor,
@@ -60,7 +73,7 @@ export interface ResolvedSlug {
  * nem resultado de busca já indexado; nele, a primeira cor vem selecionada.
  */
 export function resolveSlug(slug: string): ResolvedSlug | null {
-  const direct = productsData[slug];
+  const direct = getProduct(slug);
   if (direct) return { product: direct, color: direct.colors[0] };
 
   for (const product of allProducts()) {

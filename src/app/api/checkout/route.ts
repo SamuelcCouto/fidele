@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { DELIVERY_AREA_LABEL, isDeliverable } from "@/config/delivery";
 import { checkoutRoutes } from "@/config/site";
-import { productsData } from "@/data/products";
+import { getProduct } from "@/lib/catalog";
 import { getBaseUrl, isPubliclyReachable } from "@/lib/base-url";
 import { cepDigits, lookupCep } from "@/lib/cep";
 import { formatPrice } from "@/lib/format-price";
@@ -12,6 +12,7 @@ import {
   type PaymentLinkItem,
 } from "@/lib/infinitepay";
 import {
+  MAX_FIELD_LENGTH,
   MAX_LINE_ITEMS,
   MAX_QUANTITY_PER_ITEM,
   type CheckoutResponse,
@@ -22,9 +23,11 @@ const checkoutSchema = z.object({
   items: z
     .array(
       z.object({
-        id: z.string().min(1),
+        // Teto de tamanho: id e cor entram nas mensagens de erro, e sem
+        // limite um corpo de 200 KB devolvia 200 KB ecoados de volta.
+        id: z.string().min(1).max(MAX_FIELD_LENGTH),
         size: z.enum(SIZES),
-        color: z.string().min(1),
+        color: z.string().min(1).max(MAX_FIELD_LENGTH),
         quantity: z.number().int().min(1).max(MAX_QUANTITY_PER_ITEM),
       }),
     )
@@ -49,7 +52,7 @@ export async function POST(request: Request) {
   const items: PaymentLinkItem[] = [];
 
   for (const item of parsed.data.items) {
-    const product = productsData[item.id];
+    const product = getProduct(item.id);
 
     if (!product) {
       return NextResponse.json(

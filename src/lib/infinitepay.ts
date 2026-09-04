@@ -138,9 +138,15 @@ export async function createPaymentLink(
   return url;
 }
 
+/**
+ * `paid` é opcional de propósito: quando a cobrança não existe (ou ainda não
+ * liquidou), a API responde apenas `{"success": false}` — comprovado em log.
+ * Exigir o campo transformava essa resposta legítima em erro de contrato, o
+ * que fazia o webhook devolver 400 e a InfinitePay reenviar sem fim.
+ */
 const paymentCheckSchema = z.object({
   success: z.boolean(),
-  paid: z.boolean(),
+  paid: z.boolean().optional(),
   amount: z.number().optional(),
   paid_amount: z.number().optional(),
   installments: z.number().optional(),

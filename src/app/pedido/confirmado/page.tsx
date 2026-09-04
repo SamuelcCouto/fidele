@@ -4,6 +4,7 @@ import { ClearCartOnPaid } from "@/components/cart/clear-cart-on-paid";
 import { Button } from "@/components/ui/button";
 import { whatsappUrl } from "@/config/site";
 import { checkPayment } from "@/lib/infinitepay";
+import { safeReceiptUrl } from "@/lib/receipt-url";
 import s from "@/app/status.module.css";
 
 export const metadata: Metadata = {
@@ -19,30 +20,6 @@ type SearchParams = Promise<{
   capture_method?: string;
   receipt_url?: string;
 }>;
-
-const RECEIPT_HOSTS = ["infinitepay.io", "infinitepay.com.br"];
-
-/**
- * `receipt_url` chega pela querystring — texto que qualquer pessoa consegue
- * trocar. Renderizar sem conferir o destino transformaria esta tela em
- * trampolim de phishing com a cara da loja.
- */
-function safeReceiptUrl(value: string | undefined): string | null {
-  if (!value) return null;
-
-  try {
-    const url = new URL(value);
-    if (url.protocol !== "https:") return null;
-
-    const trusted = RECEIPT_HOSTS.some(
-      (host) => url.hostname === host || url.hostname.endsWith(`.${host}`),
-    );
-
-    return trusted ? url.toString() : null;
-  } catch {
-    return null;
-  }
-}
 
 export default async function OrderReturnPage({
   searchParams,

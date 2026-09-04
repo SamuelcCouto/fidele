@@ -13,6 +13,17 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // Convenção: prefixo "_" marca parâmetro que existe só para posicionar
+      // os seguintes na assinatura — em mock de fetch, por exemplo, onde só
+      // interessa o segundo argumento.
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

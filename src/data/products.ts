@@ -99,7 +99,9 @@ export const productsData: Record<string, Product> = {
   teste: {
     id: "teste",
     name: "Teste",
-    priceInCents: 1,
+    // R$ 0,01 era recusado pela InfinitePay: "Total price must be greater
+    // than 1". O mínimo dela é acima de um centavo.
+    priceInCents: 500,
     description: [
       "Item de teste da loja, usado para validar o pagamento.",
       "Não é uma peça à venda — se você chegou aqui por engano, é só voltar para a vitrine.",

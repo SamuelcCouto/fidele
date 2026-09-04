@@ -92,4 +92,22 @@ export const productsData: Record<string, Product> = {
     imagePrefix: "ciclo",
     imageCount: 8,
   },
+
+  // TEMPORÁRIO — peça de teste para validar o checkout com valor real de
+  // R$ 0,01. Fica por último para aparecer no fim da vitrine. Remover assim
+  // que os testes com a Elivânia terminarem.
+  teste: {
+    id: "teste",
+    name: "Teste",
+    priceInCents: 1,
+    description: [
+      "Item de teste da loja, usado para validar o pagamento.",
+      "Não é uma peça à venda — se você chegou aqui por engano, é só voltar para a vitrine.",
+    ],
+    sizes: ["P", "M", "G", "GG"],
+    // Reusa a foto da regata: não faz sentido subir imagem para um item
+    // que vai ser removido.
+    imagePrefix: "regata",
+    imageCount: 1,
+  },
 };

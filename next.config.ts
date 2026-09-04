@@ -1,20 +1,50 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === "development";
+
 /**
- * Cabeçalhos de segurança.
+ * Content-Security-Policy — sem nonce, de propósito.
  *
- * A Vercel já entrega o Strict-Transport-Security em produção; estes são os
- * que faltavam. Não há Content-Security-Policy: o script de tema roda inline
- * no <head> para o tema salvo não piscar, então uma CSP exigiria nonce por
- * requisição — e uma CSP mal calibrada quebra a loja em silêncio. Fica como
- * próximo passo, com teste dedicado.
+ * A documentação do Next 16 é explícita: CSP com nonce exige renderização
+ * dinâmica em TODAS as páginas. Isso apagaria as 16 páginas de produto
+ * pré-renderizadas, tiraria o cache de CDN e faria cada visita passar pelo
+ * servidor — loja mais lenta e mais cara, em troca de proteção contra um
+ * cenário que esta loja não tem: não há conteúdo enviado por usuário em
+ * lugar nenhum, e o React escapa tudo que é renderizado (verificado).
+ *
+ * O que 'unsafe-inline' custa: um script injetado inline rodaria. O que a
+ * política ainda garante, e é o ganho real aqui: script de origem externa
+ * bloqueado, nada de <object>/<embed>, página não pode ser embutida em
+ * iframe, formulário não pode postar para fora, e <base> não pode ser
+ * sequestrado para reescrever URLs relativas.
+ *
+ * Se um dia houver campo de texto que outra pessoa lê — avaliação de produto,
+ * comentário —, a conta inverte e vale migrar para nonce.
  */
+const csp = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "img-src 'self' data: blob:",
+  // next/font baixa as fontes do Google em tempo de build e as serve daqui.
+  "font-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  // Em desenvolvimento o Next usa websocket para recarregar a página.
+  `connect-src 'self'${isDev ? " ws:" : ""}`,
+  // Só em produção: em localhost isso forçaria https e quebraria o dev.
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
+].join("; ");
+
 const securityHeaders = [
+  { key: "Content-Security-Policy", value: csp },
   // Impede o navegador de "adivinhar" o tipo de um arquivo e executá-lo.
   { key: "X-Content-Type-Options", value: "nosniff" },
-  // Ninguém embute a loja num iframe — fecha clickjacking sobre o carrinho.
+  // Redundante com frame-ancestors, mas cobre navegador antigo sem CSP.
   { key: "X-Frame-Options", value: "DENY" },
-  // Não vaza a URL completa (com o CEP do cliente, por exemplo) para terceiros.
+  // Não vaza a URL completa (com o CEP do cliente, por exemplo) para fora.
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",

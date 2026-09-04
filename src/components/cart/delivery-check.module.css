@@ -1,0 +1,62 @@
+.wrap {
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--line);
+}
+
+.label {
+  margin: 0 0 var(--space-2);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-input);
+  background: var(--bg-elev);
+  color: var(--cream);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  transition: border-color var(--transition-fast) ease,
+    box-shadow var(--transition-fast) ease;
+}
+
+.input::placeholder {
+  color: var(--muted);
+  letter-spacing: normal;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--pink);
+  box-shadow: var(--glow-soft);
+}
+
+.message {
+  margin: var(--space-3) 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+/* Entregamos — a marca não tem verde, então o "sim" fala em rosa. */
+.ok {
+  color: var(--pink-soft);
+}
+
+/* Fora da área ou consulta indisponível: informação, não erro do cliente. */
+.info {
+  color: var(--cream);
+  opacity: 0.85;
+}
+
+/* CEP que não existe: aí sim é algo para o cliente corrigir. */
+.bad {
+  color: var(--danger);
+}
+
+.action {
+  margin-top: var(--space-3);
+}

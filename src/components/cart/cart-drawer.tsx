@@ -5,26 +5,31 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/cart-context";
 import { cn } from "@/lib/cn";
 import type { CheckoutRequest, CheckoutResponse } from "@/types/checkout";
+import type { DeliveryCheckResponse } from "@/types/delivery";
 import { CartLineItem } from "./cart-line-item";
+import { canCheckout, DeliveryCheck } from "./delivery-check";
 import s from "./cart-drawer.module.css";
 
 export function CartDrawer() {
   const { cart, cartTotal, cartCount, isCartOpen, setIsCartOpen } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [delivery, setDelivery] = useState<DeliveryCheckResponse | null>(null);
 
   const close = () => setIsCartOpen(false);
 
   const handleCheckout = async () => {
-    if (cart.length === 0) return;
+    // O guard estreita o tipo: daqui para baixo o CEP já foi confirmado.
+    if (cart.length === 0 || !canCheckout(delivery)) return;
 
     setIsLoading(true);
     setError(null);
 
-    // Só identificação e quantidade seguem para o servidor: o preço é
-    // recalculado lá a partir do catálogo.
+    // Só identificação, quantidade e CEP seguem para o servidor: o preço é
+    // recalculado lá a partir do catálogo, e a cidade é reconsultada no ViaCEP.
     const payload: CheckoutRequest = {
       items: cart.map(({ id, size, quantity }) => ({ id, size, quantity })),
+      cep: delivery.cep,
     };
 
     try {
@@ -35,7 +40,15 @@ export function CartDrawer() {
       });
 
       if (!response.ok) {
-        throw new Error(`Checkout respondeu ${response.status}`);
+        // 422 (fora da área) e 503 (CEP não verificável) trazem um texto que o
+        // cliente precisa ler; os demais viram mensagem genérica.
+        const problem = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+
+        throw new Error(
+          problem?.error ?? `Checkout respondeu ${response.status}`,
+        );
       }
 
       const data = (await response.json()) as CheckoutResponse;
@@ -46,7 +59,11 @@ export function CartDrawer() {
       window.location.href = data.checkoutUrl;
     } catch (cause) {
       console.error("Erro no checkout:", cause);
-      setError("Não conseguimos gerar o pagamento. Tente novamente.");
+      setError(
+        cause instanceof Error && cause.message
+          ? cause.message
+          : "Não conseguimos gerar o pagamento. Tente novamente.",
+      );
       setIsLoading(false);
     }
   };
@@ -87,6 +104,8 @@ export function CartDrawer() {
         </div>
 
         <div className={s.footer}>
+          {cart.length > 0 && <DeliveryCheck onResult={setDelivery} />}
+
           <div className={s.total}>
             <span>Total:</span>
             <span>{cartTotal}</span>
@@ -102,9 +121,13 @@ export function CartDrawer() {
             variant="buy"
             fullWidth
             onClick={handleCheckout}
-            disabled={cart.length === 0 || isLoading}
+            disabled={cart.length === 0 || isLoading || !canCheckout(delivery)}
           >
-            {isLoading ? "Gerando Pagamento..." : "Finalizar Compra"}
+            {isLoading
+              ? "Gerando Pagamento..."
+              : cart.length > 0 && !canCheckout(delivery)
+                ? "Informe o CEP para continuar"
+                : "Finalizar Compra"}
           </Button>
         </div>
       </aside>

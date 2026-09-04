@@ -9,6 +9,11 @@ export const siteConfig = {
 export const whatsappUrl = `https://wa.me/${siteConfig.whatsapp}`;
 export const instagramUrl = `https://www.instagram.com/${siteConfig.instagram}/`;
 
+/** Abre a conversa com a mensagem já escrita, para o cliente só apertar enviar. */
+export function whatsappUrlWithText(text: string): string {
+  return `${whatsappUrl}?text=${encodeURIComponent(text)}`;
+}
+
 /**
  * Endereços que a InfinitePay recebe no momento da cobrança. Ficam aqui para
  * a rota de checkout e as telas de retorno não divergirem em silêncio.

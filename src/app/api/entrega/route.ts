@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { isDeliverable } from "@/config/delivery";
 import { cepDigits, lookupCep } from "@/lib/cep";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 import type { DeliveryCheckResponse } from "@/types/delivery";
 
 /**
@@ -20,7 +21,29 @@ const requestSchema = z.object({
   cep: z.string().min(8).max(9),
 });
 
+/**
+ * Mais folgado que o checkout: aqui não nasce cobrança, e o carrinho dispara
+ * uma consulta a cada CEP completado. O teto existe para não virar proxy de
+ * consulta de CEP de terceiros às custas da loja.
+ */
+const DELIVERY_LIMITS = [
+  { limit: 30, windowMs: 60_000 },
+  { limit: 200, windowMs: 60 * 60_000 },
+];
+
 export async function POST(request: Request) {
+  const limit = rateLimit(`entrega:${clientIp(request)}`, DELIVERY_LIMITS);
+
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Muitas consultas. Aguarde um instante." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limit.retryAfterSeconds) },
+      },
+    );
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();

@@ -5,6 +5,7 @@ import { checkoutRoutes } from "@/config/site";
 import { getProduct } from "@/lib/catalog";
 import { getBaseUrl, isPubliclyReachable } from "@/lib/base-url";
 import { cepDigits, lookupCep } from "@/lib/cep";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { formatPrice } from "@/lib/format-price";
 import {
   createPaymentLink,
@@ -36,7 +37,29 @@ const checkoutSchema = z.object({
   cep: z.string().min(8).max(9),
 });
 
+/**
+ * Cada chamada bem-sucedida cria uma cobrança na conta da loja, então o teto é
+ * apertado: a janela curta corta rajada, a longa corta o gotejamento constante.
+ * Um comprador de verdade não passa de duas ou três tentativas.
+ */
+const CHECKOUT_LIMITS = [
+  { limit: 5, windowMs: 60_000 },
+  { limit: 20, windowMs: 60 * 60_000 },
+];
+
 export async function POST(request: Request) {
+  const limit = rateLimit(`checkout:${clientIp(request)}`, CHECKOUT_LIMITS);
+
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Muitas tentativas. Aguarde um instante e tente de novo." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limit.retryAfterSeconds) },
+      },
+    );
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();

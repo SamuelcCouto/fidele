@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { checkPayment } from "@/lib/infinitepay";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { recordPaidOrder } from "@/lib/orders";
 
 /**
@@ -25,7 +26,30 @@ const webhookSchema = z.object({
   receipt_url: z.string().optional(),
 });
 
+/**
+ * Folgado de propósito. Cada notificação faz o servidor consultar a
+ * InfinitePay, então sem teto qualquer um transforma esta rota em amplificador
+ * de chamadas de saída. Mas apertar demais derrubaria retentativa legítima de
+ * pagamento — que é o pior desfecho possível aqui. 60/min está ordens de
+ * grandeza acima do volume real desta loja.
+ */
+const WEBHOOK_LIMITS = [{ limit: 60, windowMs: 60_000 }];
+
 export async function POST(request: Request) {
+  const limit = rateLimit(`webhook:${clientIp(request)}`, WEBHOOK_LIMITS);
+
+  if (!limit.ok) {
+    // 429 e não 400: a InfinitePay reenvia, que é o comportamento desejado se
+    // por acaso for tráfego legítimo represado.
+    return NextResponse.json(
+      { error: "Muitas notificações." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limit.retryAfterSeconds) },
+      },
+    );
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();

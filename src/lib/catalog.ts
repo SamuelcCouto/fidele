@@ -1,6 +1,11 @@
 import { productsData } from "@/data/products";
 import { slugify } from "@/lib/slugify";
-import { hasColorChoice, type Product, type ProductColor } from "@/types/product";
+import {
+  colorCover,
+  hasColorChoice,
+  type Product,
+  type ProductColor,
+} from "@/types/product";
 
 /**
  * Uma peça como ela aparece na vitrine.
@@ -33,7 +38,7 @@ export function toCatalogItem(
     color,
     title: multi ? `${product.name} ${color.name}` : product.name,
     href: multi ? `/${product.id}-${slugify(color.name)}` : `/${product.id}`,
-    image: color.image,
+    image: colorCover(color),
   };
 }
 

@@ -9,8 +9,12 @@ export function isSize(value: unknown): value is Size {
 export interface ProductColor {
   /** Nome exibido e gravado no pedido. Ex.: "Cinza" */
   name: string;
-  /** Capa desta cor na vitrine e no carrinho. */
-  image: string;
+  /**
+   * Fotos desta cor, na ordem da galeria. A primeira é a capa e deve ser
+   * sempre a peça sozinha — a vitrine vende a roupa, não a produção de foto.
+   * As fotos com modelo vêm depois, para mostrar caimento.
+   */
+  images: string[];
 }
 
 export interface Product {
@@ -25,9 +29,11 @@ export interface Product {
    * mostra o seletor quando há mais de uma — não há escolha a fazer com uma só.
    */
   colors: ProductColor[];
-  /** Prefixo dos arquivos em /public/img — ex.: "marco" gera marco1.jpg…marcoN.jpg */
-  imagePrefix: string;
-  imageCount: number;
+}
+
+/** Capa da cor: a primeira foto, por definição a da peça sozinha. */
+export function colorCover(color: ProductColor): string {
+  return color.images[0];
 }
 
 export function hasColorChoice(product: Product): boolean {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AddToCart } from "@/components/product/add-to-cart";
 import { ProductGallery } from "@/components/product/product-gallery";
+import { SelectedColorProvider } from "@/components/product/selected-color";
 import { catalogSlugs, resolveSlug, toCatalogItem } from "@/lib/catalog";
 import { formatInstallments, formatPrice } from "@/lib/format-price";
 import s from "./page.module.css";
@@ -45,26 +46,30 @@ export default async function ProductPage({ params }: Params) {
   return (
     <main>
       <section className={s.section}>
-        <div className={s.main}>
-          <ProductGallery product={product} />
+        {/* Galeria e seletor ficam em lados opostos da página, mas compartilham
+            a cor escolhida — daí o provider envolver os dois. Começa na cor do
+            card clicado na vitrine. */}
+        <SelectedColorProvider initial={color}>
+          <div className={s.main}>
+            <ProductGallery productName={product.name} />
 
-          <div className={s.info}>
-            <h1 className={s.title}>{product.name}</h1>
-            <p className={s.price}>{formatPrice(product.priceInCents)}</p>
-            <p className={s.installments}>
-              {formatInstallments(product.priceInCents)}
-            </p>
+            <div className={s.info}>
+              <h1 className={s.title}>{product.name}</h1>
+              <p className={s.price}>{formatPrice(product.priceInCents)}</p>
+              <p className={s.installments}>
+                {formatInstallments(product.priceInCents)}
+              </p>
 
-            <div className={s.details}>
-              {product.description.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
+              <div className={s.details}>
+                {product.description.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
+
+              <AddToCart product={product} />
             </div>
-
-            {/* A cor vem selecionada conforme o card clicado na vitrine. */}
-            <AddToCart product={product} initialColor={color.name} />
           </div>
-        </div>
+        </SelectedColorProvider>
       </section>
     </main>
   );

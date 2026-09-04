@@ -5,17 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { useCart } from "@/contexts/cart-context";
 import { cn } from "@/lib/cn";
-import { findColor, hasColorChoice, type Product, type Size } from "@/types/product";
+import { colorCover, hasColorChoice, type Product, type Size } from "@/types/product";
+import { useSelectedColor } from "./selected-color";
 import s from "./add-to-cart.module.css";
 
-interface AddToCartProps {
-  product: Product;
-  /** Cor pré-selecionada — vem do card clicado na vitrine. */
-  initialColor: string;
-}
+export function AddToCart({ product }: { product: Product }) {
+  // A cor vive no contexto porque a galeria também depende dela.
+  const { color, setColor } = useSelectedColor();
 
-export function AddToCart({ product, initialColor }: AddToCartProps) {
-  const [selectedColor, setSelectedColor] = useState(initialColor);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -26,10 +23,6 @@ export function AddToCart({ product, initialColor }: AddToCartProps) {
   const { addToCart, setIsCartOpen } = useCart();
 
   useEffect(() => () => clearTimeout(errorTimer.current), []);
-
-  // A cor sempre existe: o fallback cobre um `initialColor` que não pertença
-  // ao produto, o que só aconteceria com URL montada à mão.
-  const color = findColor(product, selectedColor) ?? product.colors[0];
 
   const handleBuy = () => {
     if (!selectedSize) {
@@ -44,7 +37,7 @@ export function AddToCart({ product, initialColor }: AddToCartProps) {
       name: product.name,
       priceInCents: product.priceInCents,
       // A miniatura no carrinho é a da cor escolhida, não a do produto.
-      image: color.image,
+      image: colorCover(color),
       size: selectedSize,
       color: color.name,
       quantity: 1,
@@ -71,7 +64,7 @@ export function AddToCart({ product, initialColor }: AddToCartProps) {
                 type="button"
                 aria-pressed={option.name === color.name}
                 className={cn(s.color, option.name === color.name && s.selected)}
-                onClick={() => setSelectedColor(option.name)}
+                onClick={() => setColor(option)}
               >
                 {option.name}
               </button>

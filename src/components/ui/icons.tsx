@@ -22,15 +22,6 @@ export function SearchIcon({ className }: IconProps) {
   );
 }
 
-export function UserIcon({ className }: IconProps) {
-  return (
-    <svg className={cn(s.icon, className)} viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
-
 export function BagIcon({ className }: IconProps) {
   return (
     <svg className={cn(s.icon, className)} viewBox="0 0 24 24" aria-hidden="true">

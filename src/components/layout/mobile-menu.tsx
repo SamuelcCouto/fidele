@@ -100,20 +100,6 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               Siga no Instagram
             </a>
           </nav>
-
-          <button
-            type="button"
-            className={s.footer}
-            onClick={() =>
-              alert("Área de Login / Cashback será desenvolvida em breve!")
-            }
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            <span>Iniciar sessão . Criar uma conta</span>
-          </button>
         </aside>
       </div>
 

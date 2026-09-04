@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MenuIcon, SearchIcon, UserIcon } from "@/components/ui/icons";
+import { MenuIcon, SearchIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 import { CartButton } from "./cart-button";
 import { Logo } from "./logo";
@@ -42,16 +42,6 @@ export function Header() {
               onClick={() => setShowMobileSearch((open) => !open)}
             >
               <SearchIcon />
-            </button>
-
-            <button
-              type="button"
-              className={s.iconButton}
-              title="Minha Conta"
-              aria-label="Minha conta"
-              onClick={() => alert("Login / Cashback em breve!")}
-            >
-              <UserIcon />
             </button>
 
             <CartButton />

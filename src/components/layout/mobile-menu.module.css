@@ -91,28 +91,6 @@
   padding-left: 5px;
 }
 
-.footer {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-5) var(--space-8);
-  border-top: 1px solid var(--line);
-  background: none;
-  color: var(--cream);
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.footer svg {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 /* ---- conteúdo dos modais ---- */
 .steps {
   margin: 0;

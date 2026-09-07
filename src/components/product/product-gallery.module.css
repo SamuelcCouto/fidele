@@ -88,11 +88,13 @@
     max-height: none;
   }
 
-  /* A peça inteira precisa caber, sem cortar as bordas. As fotos têm fundo
-     branco, igual ao do quadro, então o encaixe não deixa borda aparente. */
-  .mainImage {
-    object-fit: contain;
-  }
+  /* `.mainImage` já herda object-fit: cover da regra de cima — igual ao
+     desktop, de propósito.
+     Antes havia um "contain" aqui, pensado para a peça inteira caber sem
+     cortar. Só que a maioria das fotos de modelo é ao ar livre (grama,
+     parede), não em fundo branco de estúdio: "contain" encaixava a foto sem
+     cortar, mas sobrava o branco do quadro nas laterais — visível bem mais
+     do que uma borda, virava tarja. A cliente pediu para tirar. */
 }
 
 /* Celular estreito: a trilha cede alguns pixels para a foto não encolher. */

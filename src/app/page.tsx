@@ -30,9 +30,7 @@ export default function Home() {
                 className={s.heroImage}
               />
             </div>
-            <p className={s.heroSub}>
-              Seja leal a você mesma. Esqueça as regras — se você gosta, use!
-            </p>
+            <p className={s.heroSub}>Seja leal a você mesma!</p>
           </div>
         </section>
 
@@ -44,7 +42,15 @@ export default function Home() {
 
         <section id="quem-somos" className={s.about}>
           <h3>
-            Você já conhece a <em>FIDÈLE?</em>
+            Você já conhece a{" "}
+            <Image
+              src="/img/Fidele-logocabecalho.png"
+              alt="FIDÈLE"
+              width={46}
+              height={40}
+              className={s.aboutLogo}
+            />
+            <em>?</em>
           </h3>
           <Image
             src="/img/capa.jpg"

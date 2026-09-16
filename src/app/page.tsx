@@ -35,22 +35,24 @@ export default function Home() {
         </section>
 
         <SectionTitle id="produtos">
-          Mais <em>Desejados</em>
+          Drop <em>Renascer</em>
         </SectionTitle>
 
         <ProductGrid items={items} />
 
         <section id="quem-somos" className={s.about}>
-          <h3>
-            Você já conhece a{" "}
+          {/* A cliente pediu para tirar a frase "Você já conhece a FIDÈLE?" e
+              deixar só a arte da marca. O <h3> continua sendo o título da
+              seção: o alt da imagem é que dá o nome acessível. */}
+          <h3 className={s.aboutHeading}>
             <Image
-              src="/img/Fidele-logocabecalho.png"
+              src="/img/logofidele.png"
               alt="FIDÈLE"
-              width={46}
-              height={40}
+              width={802}
+              height={522}
+              sizes="(max-width: 768px) 70vw, 280px"
               className={s.aboutLogo}
             />
-            <em>?</em>
           </h3>
           <Image
             src="/img/capa.jpg"
@@ -60,11 +62,24 @@ export default function Home() {
             sizes="(max-width: 768px) 100vw, 400px"
             className={s.aboutImage}
           />
-          <p className={s.aboutText}>
-            Mais do que uma marca de streetwear, somos um movimento. Peças
-            pensadas com exclusividade, tecido premium e atitude para quem dita
-            as próprias regras.
-          </p>
+          <div className={s.aboutText}>
+            <p>
+              No dia 23 a Fidèle nasceu da vontade de criar algo que fosse além
+              das roupas.
+            </p>
+            <p>
+              Somos para mulheres que têm personalidade, opinião e não foram
+              feitas para caber nas regras que as pessoas criaram.
+            </p>
+            <p>
+              Cada peça carrega atitude, identidade e liberdade para você ser
+              exatamente quem é.
+            </p>
+            <p>Porque estilo não deveria dizer quem você precisa ser.</p>
+            <p className={s.aboutSignature}>
+              Seja leal a você mesma. Esqueça as regras. Se você gosta, use.
+            </p>
+          </div>
         </section>
       </main>
     </>

@@ -19,7 +19,7 @@ import {
   MAX_QUANTITY_PER_ITEM,
   type CheckoutResponse,
 } from "@/types/checkout";
-import { findColor, SIZES } from "@/types/product";
+import { findColor, isSoldOut, SIZES } from "@/types/product";
 
 const checkoutSchema = z.object({
   items: z
@@ -105,6 +105,19 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: `Cor ${item.color} indisponível para ${product.name}.` },
         { status: 400 },
+      );
+    }
+
+    // Esgotado precisa valer aqui, não só no botão desabilitado: a página é
+    // estática e fica em cache, então um carrinho salvo antes de a peça
+    // acabar — ou um POST direto — chegaria com um tamanho que não existe
+    // mais. Cobrar por isso é vender o que não há para entregar.
+    if (isSoldOut(color, item.size)) {
+      return NextResponse.json(
+        {
+          error: `${product.name} ${color.name} tamanho ${item.size} está esgotado.`,
+        },
+        { status: 409 },
       );
     }
 

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { isColorSoldOut } from "@/types/product";
 import {
+  allProducts,
   catalogItems,
   catalogSlugs,
   getProduct,
@@ -127,5 +129,31 @@ describe("searchCatalog", () => {
 
   it("devolve vazio quando nada casa", () => {
     expect(searchCatalog("guarda-chuva")).toEqual([]);
+  });
+});
+
+describe("esgotados", () => {
+  it("todo tamanho marcado como esgotado existe no produto", () => {
+    for (const product of allProducts()) {
+      for (const color of product.colors) {
+        for (const size of color.soldOut ?? []) {
+          expect(
+            product.sizes.includes(size),
+            `${product.id}/${color.name}: ${size} esgotado mas não é tamanho do produto`,
+          ).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("nenhum produto está inteiramente esgotado em todas as cores", () => {
+    for (const product of allProducts()) {
+      const todasEsgotadas = product.colors.every((color) =>
+        isColorSoldOut(product, color),
+      );
+      expect(todasEsgotadas, `${product.id} sumiu por completo da loja`).toBe(
+        false,
+      );
+    }
   });
 });

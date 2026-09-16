@@ -109,3 +109,26 @@
   color: var(--pink);
   box-shadow: var(--glow-soft);
 }
+
+/* Tamanho esgotado: continua legível (o cliente precisa entender que a peça
+   existe naquele tamanho, só acabou), mas riscado e apagado para não ser
+   confundido com opção disponível. */
+.size.soldOut {
+  border-color: var(--line);
+  color: var(--muted);
+  text-decoration: line-through;
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.size.soldOut:hover,
+.size.soldOut:focus-visible {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.soldOutNotice {
+  margin-bottom: var(--space-3);
+  color: var(--muted);
+  font-size: 0.9rem;
+}

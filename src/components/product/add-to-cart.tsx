@@ -5,7 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { useCart } from "@/contexts/cart-context";
 import { cn } from "@/lib/cn";
-import { colorCover, hasColorChoice, type Product, type Size } from "@/types/product";
+import {
+  colorCover,
+  hasColorChoice,
+  isColorSoldOut,
+  isSoldOut,
+  type Product,
+  type Size,
+} from "@/types/product";
 import { useSelectedColor } from "./selected-color";
 import s from "./add-to-cart.module.css";
 
@@ -24,8 +31,16 @@ export function AddToCart({ product }: { product: Product }) {
 
   useEffect(() => () => clearTimeout(errorTimer.current), []);
 
+  // Trocar de cor pode invalidar a escolha: o M existia na cor anterior e
+  // acabou nesta. Derivar em vez de zerar num efeito evita o quadro
+  // intermediário em que o botão aparece marcado e esgotado ao mesmo tempo.
+  const activeSize =
+    selectedSize && !isSoldOut(color, selectedSize) ? selectedSize : null;
+
+  const colorSoldOut = isColorSoldOut(product, color);
+
   const handleBuy = () => {
-    if (!selectedSize) {
+    if (!activeSize) {
       setShowError(true);
       clearTimeout(errorTimer.current);
       errorTimer.current = setTimeout(() => setShowError(false), 2000);
@@ -38,7 +53,7 @@ export function AddToCart({ product }: { product: Product }) {
       priceInCents: product.priceInCents,
       // A miniatura no carrinho é a da cor escolhida, não a do produto.
       image: colorCover(color),
-      size: selectedSize,
+      size: activeSize,
       color: color.name,
       quantity: 1,
     });
@@ -80,27 +95,48 @@ export function AddToCart({ product }: { product: Product }) {
           ⚠️ Escolha um tamanho para continuar.
         </p>
 
+        {colorSoldOut && (
+          <p className={s.soldOutNotice}>
+            Todos os tamanhos desta cor estão esgotados no momento.
+          </p>
+        )}
+
         <div className={s.options}>
-          {product.sizes.map((size) => (
-            <button
-              key={size}
-              type="button"
-              aria-pressed={selectedSize === size}
-              className={cn(
-                s.size,
-                selectedSize === size && s.selected,
-                showError && s.invalid,
-              )}
-              onClick={() => handleSelectSize(size)}
-            >
-              {size}
-            </button>
-          ))}
+          {product.sizes.map((size) => {
+            const esgotado = isSoldOut(color, size);
+
+            return (
+              <button
+                key={size}
+                type="button"
+                disabled={esgotado}
+                aria-pressed={activeSize === size}
+                // `disabled` já impede o clique, mas não explica o porquê para
+                // quem usa leitor de tela.
+                aria-label={esgotado ? `Tamanho ${size} esgotado` : undefined}
+                title={esgotado ? "Esgotado" : undefined}
+                className={cn(
+                  s.size,
+                  activeSize === size && s.selected,
+                  esgotado && s.soldOut,
+                  showError && !esgotado && s.invalid,
+                )}
+                onClick={() => handleSelectSize(size)}
+              >
+                {size}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <Button variant="buy" fullWidth onClick={handleBuy}>
-        Comprar
+      <Button
+        variant="buy"
+        fullWidth
+        onClick={handleBuy}
+        disabled={colorSoldOut}
+      >
+        {colorSoldOut ? "Esgotado" : "Comprar"}
       </Button>
 
       <Modal
@@ -123,8 +159,8 @@ export function AddToCart({ product }: { product: Product }) {
           </>
         }
       >
-        A <strong>{product.name}</strong> ({color.name}, Tam: {selectedSize})
-        foi adicionada ao seu carrinho com sucesso.
+        A <strong>{product.name}</strong> ({color.name}, Tam: {activeSize}) foi
+        adicionada ao seu carrinho com sucesso.
       </Modal>
     </>
   );

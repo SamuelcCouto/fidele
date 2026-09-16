@@ -15,6 +15,15 @@ export interface ProductColor {
    * As fotos com modelo vêm depois, para mostrar caimento.
    */
   images: string[];
+  /**
+   * Tamanhos esgotados NESTA cor. Fica na cor e não no produto porque o
+   * estoque acaba por cor: a Marco 23 pode ter acabado o P cinza e continuar
+   * com P branco.
+   *
+   * Controle manual, editado à mão quando a loja avisa. Não é sistema de
+   * estoque — não desconta em venda nem repõe sozinho.
+   */
+  soldOut?: Size[];
 }
 
 export interface Product {
@@ -45,4 +54,14 @@ export function findColor(
   name: string,
 ): ProductColor | undefined {
   return product.colors.find((color) => color.name === name);
+}
+
+/** Este tamanho acabou nesta cor? */
+export function isSoldOut(color: ProductColor, size: Size): boolean {
+  return color.soldOut?.includes(size) ?? false;
+}
+
+/** A cor inteira acabou — nenhum tamanho disponível. */
+export function isColorSoldOut(product: Product, color: ProductColor): boolean {
+  return product.sizes.every((size) => isSoldOut(color, size));
 }

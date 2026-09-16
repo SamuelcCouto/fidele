@@ -223,6 +223,58 @@ describe("POST /api/checkout — adulteração", () => {
   });
 });
 
+describe("POST /api/checkout — esgotado", () => {
+  // O botão desabilitado é UI. A página de produto é estática e fica em
+  // cache, então um carrinho salvo antes de a peça acabar chegaria aqui com
+  // um tamanho que não existe mais — e cobrar por ele é vender o que não há.
+  it("recusa tamanho esgotado sem criar cobrança", async () => {
+    const fetchMock = mockRede();
+    const response = await post({
+      items: [{ id: "regata", size: "P", color: "Branco", quantity: 1 }],
+      cep: "74473813",
+    });
+
+    expect(response.status).toBe(409);
+    expect(criouCobranca(fetchMock)).toBe(false);
+  });
+
+  it("recusa mesmo quando só um item do carrinho está esgotado", async () => {
+    const fetchMock = mockRede();
+    const response = await post({
+      items: [
+        { id: "marco", size: "P", color: "Branco", quantity: 1 },
+        { id: "polo", size: "M", color: "Rosa", quantity: 1 },
+      ],
+      cep: "74473813",
+    });
+
+    expect(response.status).toBe(409);
+    expect(criouCobranca(fetchMock)).toBe(false);
+  });
+
+  it("aceita tamanho disponível do mesmo produto", async () => {
+    mockRede();
+    const response = await post({
+      items: [{ id: "regata", size: "M", color: "Branco", quantity: 1 }],
+      cep: "74473813",
+    });
+
+    expect(response.status).toBe(200);
+  });
+
+  it("diz qual peça acabou, para o cliente saber o que tirar do carrinho", async () => {
+    mockRede();
+    const response = await post({
+      items: [{ id: "polo", size: "P", color: "Rosa", quantity: 1 }],
+      cep: "74473813",
+    });
+
+    const corpo = (await response.json()) as { error: string };
+    expect(corpo.error).toContain("Polo Florescer");
+    expect(corpo.error).toContain("P");
+  });
+});
+
 describe("POST /api/checkout — área de entrega", () => {
   it("recusa cidade fora da área e não chega a criar cobrança", async () => {
     const fetchMock = mockRede({ city: "São Paulo", uf: "SP" });

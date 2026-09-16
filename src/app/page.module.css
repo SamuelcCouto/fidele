@@ -91,27 +91,19 @@
   scroll-margin-top: var(--space-20);
 }
 
-.about h3 {
-  margin-bottom: var(--space-6);
-  color: var(--cream);
-  font-family: var(--font-display);
-  font-size: 24px;
+/* O título da seção agora é só a arte da marca — sem texto ao redor, por
+   pedido da cliente. O <h3> vira o contêiner que centraliza a logo. */
+.aboutHeading {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 var(--space-6);
 }
 
-.about h3 em {
-  font-style: normal;
-  color: var(--pink);
-}
-
-/* Logo inline no lugar da palavra "FIDÈLE" no título. Altura um pouco maior
-   que o texto ao redor (24px) porque o arquivo tem bastante espaço vazio em
-   volta do símbolo — do tamanho exato do texto, ficaria pequeno demais. */
 .aboutLogo {
-  display: inline-block;
-  height: 34px;
-  width: auto;
-  vertical-align: middle;
-  margin: 0 2px -6px;
+  width: min(280px, 70%);
+  height: auto;
+  /* Mesmo brilho neon que os títulos de seção já usam no trecho rosa. */
+  filter: drop-shadow(0 0 12px rgba(255, 31, 141, 0.35));
 }
 
 .aboutImage {
@@ -123,11 +115,25 @@
 }
 
 .aboutText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
   max-width: 600px;
   margin: 0 auto;
   font-size: 15px;
   line-height: 1.6;
   opacity: 0.85;
+}
+
+.aboutText p {
+  margin: 0;
+}
+
+/* A última linha é o lema da marca — fecha o texto com a mesma frase que
+   abre o site, então ganha o destaque que as outras não têm. */
+.aboutSignature {
+  color: var(--pink-soft);
+  font-weight: 600;
 }
 
 @media (max-width: 900px) {

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { instagramUrl, siteConfig, whatsappUrlWithText } from "@/config/site";
 import s from "./footer.module.css";
 
@@ -33,7 +34,13 @@ export function Footer() {
     <footer className={s.footer}>
       <div className={s.grid}>
         <div>
-          <div className={s.logo}>{siteConfig.name}</div>
+          <Image
+            src="/img/logofidele.png"
+            alt={siteConfig.name}
+            width={802}
+            height={522}
+            className={s.logo}
+          />
           <p className={s.tagline}>
             Peças com atitude, embaladas com carinho. Seja leal a você mesma.
           </p>

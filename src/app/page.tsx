@@ -41,27 +41,28 @@ export default function Home() {
         <ProductGrid items={items} />
 
         <section id="quem-somos" className={s.about}>
-          {/* A cliente pediu para tirar a frase "Você já conhece a FIDÈLE?" e
-              deixar só a arte da marca. O <h3> continua sendo o título da
-              seção: o alt da imagem é que dá o nome acessível. */}
-          <h3 className={s.aboutHeading}>
+          {/* A cliente pediu a logo menor e a pergunta em cima da foto, não
+              empilhada acima dela — o <h3> vira a legenda sobreposta. */}
+          <div className={s.aboutCover}>
             <Image
-              src="/img/logofidele.png"
-              alt="FIDÈLE"
-              width={802}
-              height={522}
-              sizes="(max-width: 768px) 70vw, 280px"
-              className={s.aboutLogo}
+              src="/img/capa.jpg"
+              alt="Equipe Fidèle"
+              fill
+              sizes="(max-width: 768px) 100vw, 400px"
+              className={s.aboutImage}
             />
-          </h3>
-          <Image
-            src="/img/capa.jpg"
-            alt="Equipe Fidèle"
-            width={400}
-            height={267}
-            sizes="(max-width: 768px) 100vw, 400px"
-            className={s.aboutImage}
-          />
+            <h3 className={s.aboutHeading}>
+              Você conhece a{" "}
+              <Image
+                src="/img/logofidele.png"
+                alt="FIDÈLE"
+                width={802}
+                height={522}
+                className={s.aboutLogo}
+              />
+              ?
+            </h3>
+          </div>
           <div className={s.aboutText}>
             <p>
               No dia 23 a Fidèle nasceu da vontade de criar algo que fosse além

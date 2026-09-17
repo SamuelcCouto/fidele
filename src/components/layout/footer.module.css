@@ -35,11 +35,9 @@
 }
 
 .logo {
+  width: 110px;
+  height: auto;
   margin-bottom: var(--space-3);
-  color: var(--pink);
-  font-family: var(--font-brand);
-  font-size: 20px;
-  -webkit-text-stroke: 1px #000;
   filter: var(--glow-soft);
 }
 

@@ -8,14 +8,20 @@ import { cepDigits, lookupCep } from "@/lib/cep";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { rejectCrossSiteRequest } from "@/lib/request-guard";
 import { formatPrice } from "@/lib/format-price";
+import { isValidPhone, phoneDigits } from "@/lib/phone";
 import {
   createPaymentLink,
   InfinitePayError,
   type PaymentLinkItem,
 } from "@/lib/infinitepay";
+import { savePendingOrder, type PendingOrderItem } from "@/lib/pending-orders";
 import {
+  MAX_ADDRESS_LENGTH,
+  MAX_COMPLEMENT_LENGTH,
   MAX_FIELD_LENGTH,
   MAX_LINE_ITEMS,
+  MAX_NAME_LENGTH,
+  MAX_NUMBER_LENGTH,
   MAX_QUANTITY_PER_ITEM,
   type CheckoutResponse,
 } from "@/types/checkout";
@@ -36,6 +42,14 @@ const checkoutSchema = z.object({
     .min(1)
     .max(MAX_LINE_ITEMS),
   cep: z.string().min(8).max(9),
+  customer: z.object({
+    name: z.string().trim().min(2).max(MAX_NAME_LENGTH),
+    // Aceita com ou sem máscara: normalizado com phoneDigits() antes de usar.
+    phone: z.string().refine(isValidPhone, "Telefone inválido."),
+    street: z.string().trim().min(2).max(MAX_ADDRESS_LENGTH),
+    number: z.string().trim().min(1).max(MAX_NUMBER_LENGTH),
+    complement: z.string().trim().max(MAX_COMPLEMENT_LENGTH).optional(),
+  }),
 });
 
 /**
@@ -79,6 +93,7 @@ export async function POST(request: Request) {
   }
 
   const items: PaymentLinkItem[] = [];
+  const orderItems: PendingOrderItem[] = [];
 
   for (const item of parsed.data.items) {
     const product = getProduct(item.id);
@@ -131,6 +146,14 @@ export async function POST(request: Request) {
       // tamanho chegam até quem vai separar a peça.
       description: `${product.name} — ${color.name} — Tam ${item.size}`,
     });
+
+    orderItems.push({
+      name: product.name,
+      color: color.name,
+      size: item.size,
+      quantity: item.quantity,
+      priceInCents: product.priceInCents,
+    });
   }
 
   const totalInCents = items.reduce(
@@ -141,9 +164,10 @@ export async function POST(request: Request) {
   // Área de entrega: o carrinho já checa e bloqueia o botão, mas isso é UI —
   // um POST direto passaria por cima. A decisão que vale é esta.
   const cep = cepDigits(parsed.data.cep);
+  let address: Awaited<ReturnType<typeof lookupCep>>;
 
   try {
-    const address = await lookupCep(cep);
+    address = await lookupCep(cep);
 
     if (!address) {
       return NextResponse.json(
@@ -175,6 +199,30 @@ export async function POST(request: Request) {
   const baseUrl = getBaseUrl();
   const webhookUrl = `${baseUrl}${checkoutRoutes.webhook}`;
   const orderNsu = crypto.randomUUID();
+  const { customer } = parsed.data;
+
+  // Best-effort: sem isto a Elivânia não recebe o aviso de separação quando o
+  // pagamento cair, mas a venda em si não pode travar por causa do Redis.
+  try {
+    await savePendingOrder({
+      orderNsu,
+      createdAt: new Date().toISOString(),
+      customer: { name: customer.name, phone: phoneDigits(customer.phone) },
+      address: {
+        cep,
+        street: customer.street,
+        number: customer.number,
+        complement: customer.complement,
+        neighborhood: address.neighborhood,
+        city: address.city,
+        uf: address.uf,
+      },
+      items: orderItems,
+      totalInCents,
+    });
+  } catch (cause) {
+    console.error(`[checkout] ${orderNsu}: falha ao salvar o pedido pendente:`, cause);
+  }
 
   try {
     const checkoutUrl = await createPaymentLink({

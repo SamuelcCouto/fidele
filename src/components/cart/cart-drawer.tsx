@@ -4,9 +4,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/cart-context";
 import { cn } from "@/lib/cn";
-import type { CheckoutRequest, CheckoutResponse } from "@/types/checkout";
+import type { CheckoutRequest, CheckoutResponse, CustomerInput } from "@/types/checkout";
 import type { DeliveryCheckResponse } from "@/types/delivery";
 import { CartLineItem } from "./cart-line-item";
+import { CustomerDetails } from "./customer-details";
 import { canCheckout, DeliveryCheck } from "./delivery-check";
 import s from "./cart-drawer.module.css";
 
@@ -15,18 +16,21 @@ export function CartDrawer() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [delivery, setDelivery] = useState<DeliveryCheckResponse | null>(null);
+  const [customer, setCustomer] = useState<CustomerInput | null>(null);
 
   const close = () => setIsCartOpen(false);
 
   const handleCheckout = async () => {
-    // O guard estreita o tipo: daqui para baixo o CEP já foi confirmado.
-    if (cart.length === 0 || !canCheckout(delivery)) return;
+    // Os guards estreitam o tipo: daqui para baixo o CEP e os dados de
+    // entrega já foram confirmados.
+    if (cart.length === 0 || !canCheckout(delivery) || !customer) return;
 
     setIsLoading(true);
     setError(null);
 
-    // Só identificação, quantidade e CEP seguem para o servidor: o preço é
-    // recalculado lá a partir do catálogo, e a cidade é reconsultada no ViaCEP.
+    // Identificação, quantidade, CEP e dados de entrega seguem para o
+    // servidor: o preço é recalculado lá a partir do catálogo, e a cidade é
+    // reconsultada no ViaCEP.
     const payload: CheckoutRequest = {
       items: cart.map(({ id, size, color, quantity }) => ({
         id,
@@ -35,6 +39,7 @@ export function CartDrawer() {
         quantity,
       })),
       cep: delivery.cep,
+      customer,
     };
 
     try {
@@ -114,6 +119,10 @@ export function CartDrawer() {
         <div className={s.footer}>
           {cart.length > 0 && <DeliveryCheck onResult={setDelivery} />}
 
+          {cart.length > 0 && canCheckout(delivery) && (
+            <CustomerDetails onChange={setCustomer} />
+          )}
+
           <div className={s.total}>
             <span>Total:</span>
             <span>{cartTotal}</span>
@@ -129,13 +138,17 @@ export function CartDrawer() {
             variant="buy"
             fullWidth
             onClick={handleCheckout}
-            disabled={cart.length === 0 || isLoading || !canCheckout(delivery)}
+            disabled={
+              cart.length === 0 || isLoading || !canCheckout(delivery) || !customer
+            }
           >
             {isLoading
               ? "Gerando Pagamento..."
               : cart.length > 0 && !canCheckout(delivery)
                 ? "Informe o CEP para continuar"
-                : "Finalizar Compra"}
+                : cart.length > 0 && !customer
+                  ? "Preencha seus dados para continuar"
+                  : "Finalizar Compra"}
           </Button>
         </div>
       </aside>

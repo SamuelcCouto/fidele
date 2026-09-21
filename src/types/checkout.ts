@@ -15,10 +15,24 @@ export interface CheckoutItemInput {
   quantity: number;
 }
 
+/**
+ * Dados de quem compra e para onde entregar. Bairro, cidade e UF já vêm do
+ * CEP (ViaCEP) — pedir de novo ao cliente só daria chance de divergir.
+ */
+export interface CustomerInput {
+  name: string;
+  /** Só dígitos, com DDD. */
+  phone: string;
+  street: string;
+  number: string;
+  complement?: string;
+}
+
 export interface CheckoutRequest {
   items: CheckoutItemInput[];
   /** Oito dígitos, sem máscara. Define se a loja entrega no endereço. */
   cep: string;
+  customer: CustomerInput;
 }
 
 export interface CheckoutResponse {
@@ -39,3 +53,9 @@ export const MAX_LINE_ITEMS = 50;
  * gigante na mensagem de erro.
  */
 export const MAX_FIELD_LENGTH = 64;
+
+/** Tetos dos dados do comprador — generosos o bastante para nome e endereço reais. */
+export const MAX_NAME_LENGTH = 80;
+export const MAX_ADDRESS_LENGTH = 120;
+export const MAX_NUMBER_LENGTH = 10;
+export const MAX_COMPLEMENT_LENGTH = 80;

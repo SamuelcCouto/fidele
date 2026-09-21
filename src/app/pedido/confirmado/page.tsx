@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ClearCartOnPaid } from "@/components/cart/clear-cart-on-paid";
 import { Button } from "@/components/ui/button";
-import { whatsappUrl } from "@/config/site";
+import { whatsappUrl, whatsappUrlWithText } from "@/config/site";
 import { checkPayment } from "@/lib/infinitepay";
+import { whatsappOrderMessage } from "@/lib/order-message";
+import { getPendingOrder } from "@/lib/pending-orders";
 import { safeReceiptUrl } from "@/lib/receipt-url";
 import { firstParam, type QueryValue } from "@/lib/search-params";
 import s from "@/app/status.module.css";
@@ -54,6 +56,13 @@ export default async function OrderReturnPage({
     }
   }
 
+  // Mesmo dado que o webhook usa para montar o e-mail: aqui vira o texto que
+  // o próprio comprador manda no WhatsApp, com um toque.
+  const pendingOrder =
+    status === "paid" && orderNsu
+      ? await getPendingOrder(orderNsu).catch(() => null)
+      : null;
+
   return (
     <main className={s.main}>
       {status === "paid" && <ClearCartOnPaid />}
@@ -64,8 +73,10 @@ export default async function OrderReturnPage({
             Pagamento <em>confirmado</em>
           </h1>
           <p className={s.text}>
-            Recebemos seu pedido e ele já está na fila de separação. A gente
-            entra em contato pelo WhatsApp para combinar a entrega.
+            Recebemos seu pedido e ele já está na fila de separação.
+            {pendingOrder
+              ? " Quer adiantar? Manda os detalhes no WhatsApp com um toque."
+              : " A gente entra em contato pelo WhatsApp para combinar a entrega."}
           </p>
         </>
       )}
@@ -104,6 +115,16 @@ export default async function OrderReturnPage({
         {receiptUrl && (
           <a href={receiptUrl} target="_blank" rel="noopener noreferrer">
             <Button variant="outline">Ver comprovante</Button>
+          </a>
+        )}
+
+        {status === "paid" && pendingOrder && (
+          <a
+            href={whatsappUrlWithText(whatsappOrderMessage(pendingOrder))}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="outline">Enviar pedido no WhatsApp</Button>
           </a>
         )}
 

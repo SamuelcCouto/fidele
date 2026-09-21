@@ -69,9 +69,17 @@ function postComIp(ip: string, body: unknown = PEDIDO_VALIDO) {
   );
 }
 
+const CLIENTE_VALIDO = {
+  name: "Maria Silva",
+  phone: "62992210708",
+  street: "Rua das Flores",
+  number: "123",
+};
+
 const PEDIDO_VALIDO = {
   items: [{ id: "marco", size: "P", color: "Branco", quantity: 2 }],
   cep: "74473813",
+  customer: CLIENTE_VALIDO,
 };
 
 type FetchMock = ReturnType<typeof mockRede>;
@@ -150,6 +158,7 @@ describe("POST /api/checkout — adulteração", () => {
         },
       ],
       cep: "74473813",
+      customer: CLIENTE_VALIDO,
     });
 
     expect(corpoEnviado(fetchMock).items[0].price).toBe(11500);
@@ -196,7 +205,11 @@ describe("POST /api/checkout — adulteração", () => {
     ],
   ])("recusa %s sem criar cobrança", async (_caso, item) => {
     const fetchMock = mockRede();
-    const response = await post({ items: [item], cep: "74473813" });
+    const response = await post({
+      items: [item],
+      cep: "74473813",
+      customer: CLIENTE_VALIDO,
+    });
 
     expect(response.status).toBe(400);
     expect(criouCobranca(fetchMock)).toBe(false);
@@ -204,7 +217,10 @@ describe("POST /api/checkout — adulteração", () => {
 
   it("recusa carrinho vazio", async () => {
     mockRede();
-    expect((await post({ items: [], cep: "74473813" })).status).toBe(400);
+    expect(
+      (await post({ items: [], cep: "74473813", customer: CLIENTE_VALIDO }))
+        .status,
+    ).toBe(400);
   });
 
   it("recusa corpo que não é JSON", async () => {
@@ -232,6 +248,7 @@ describe("POST /api/checkout — esgotado", () => {
     const response = await post({
       items: [{ id: "regata", size: "P", color: "Branco", quantity: 1 }],
       cep: "74473813",
+      customer: CLIENTE_VALIDO,
     });
 
     expect(response.status).toBe(409);
@@ -246,6 +263,7 @@ describe("POST /api/checkout — esgotado", () => {
         { id: "polo", size: "M", color: "Rosa", quantity: 1 },
       ],
       cep: "74473813",
+      customer: CLIENTE_VALIDO,
     });
 
     expect(response.status).toBe(409);
@@ -257,6 +275,7 @@ describe("POST /api/checkout — esgotado", () => {
     const response = await post({
       items: [{ id: "regata", size: "M", color: "Branco", quantity: 1 }],
       cep: "74473813",
+      customer: CLIENTE_VALIDO,
     });
 
     expect(response.status).toBe(200);
@@ -267,6 +286,7 @@ describe("POST /api/checkout — esgotado", () => {
     const response = await post({
       items: [{ id: "polo", size: "P", color: "Rosa", quantity: 1 }],
       cep: "74473813",
+      customer: CLIENTE_VALIDO,
     });
 
     const corpo = (await response.json()) as { error: string };
@@ -298,7 +318,64 @@ describe("POST /api/checkout — área de entrega", () => {
 
   it("recusa pedido sem CEP", async () => {
     mockRede();
-    expect((await post({ items: PEDIDO_VALIDO.items })).status).toBe(400);
+    expect(
+      (
+        await post({
+          items: PEDIDO_VALIDO.items,
+          customer: CLIENTE_VALIDO,
+        })
+      ).status,
+    ).toBe(400);
+  });
+});
+
+describe("POST /api/checkout — dados do comprador", () => {
+  it.each([
+    ["nome ausente", { ...CLIENTE_VALIDO, name: "" }],
+    ["nome com um caractere", { ...CLIENTE_VALIDO, name: "M" }],
+    ["telefone com poucos dígitos", { ...CLIENTE_VALIDO, phone: "6299221" }],
+    ["telefone com letras", { ...CLIENTE_VALIDO, phone: "abc" }],
+    ["rua ausente", { ...CLIENTE_VALIDO, street: "" }],
+    ["número ausente", { ...CLIENTE_VALIDO, number: "" }],
+  ])("recusa %s sem criar cobrança", async (_caso, customer) => {
+    const fetchMock = mockRede();
+    const response = await post({ ...PEDIDO_VALIDO, customer });
+
+    expect(response.status).toBe(400);
+    expect(criouCobranca(fetchMock)).toBe(false);
+  });
+
+  it("recusa pedido sem os dados do comprador", async () => {
+    mockRede();
+    const response = await post({
+      items: PEDIDO_VALIDO.items,
+      cep: PEDIDO_VALIDO.cep,
+    });
+    expect(response.status).toBe(400);
+  });
+
+  it("aceita telefone com máscara", async () => {
+    mockRede();
+    const response = await post({
+      ...PEDIDO_VALIDO,
+      customer: { ...CLIENTE_VALIDO, phone: "(62) 99221-0708" },
+    });
+    expect(response.status).toBe(200);
+  });
+
+  it("aceita sem complemento", async () => {
+    mockRede();
+    const response = await post(PEDIDO_VALIDO);
+    expect(response.status).toBe(200);
+  });
+
+  it("aceita com complemento", async () => {
+    mockRede();
+    const response = await post({
+      ...PEDIDO_VALIDO,
+      customer: { ...CLIENTE_VALIDO, complement: "Apto 12" },
+    });
+    expect(response.status).toBe(200);
   });
 });
 

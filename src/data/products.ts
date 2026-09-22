@@ -92,7 +92,8 @@ export const productsData: Record<string, Product> = {
       { name: "Preto", images: img("essencia", 12, 13, 11, 1, 8, 10) },
       // A capa tem de ser a peça pela frente, igual às outras cores — a 3 é
       // a peça pelo avesso (regressão apontada pela cliente).
-      { name: "Bege", images: img("essencia", 2, 4, 3, 5, 6, 7) },
+      // essencia6 saiu (foto de grupo, qualidade ruim); a 20 entrou no lugar.
+      { name: "Bege", images: img("essencia", 2, 4, 3, 5, 7, 20) },
     ],
   },
   eva: {

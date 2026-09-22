@@ -91,40 +91,12 @@
   scroll-margin-top: var(--space-20);
 }
 
-/* A pergunta "Você conhece a [logo]?" fica sobreposta à foto, não empilhada
-   acima dela — o contêiner recorta a imagem e ancora o <h3> no rodapé dela. */
-.aboutCover {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  aspect-ratio: 400 / 267;
-  margin: 0 auto var(--space-6);
-  overflow: hidden;
-  border-radius: var(--radius-xl);
-}
-
-.aboutImage {
-  object-fit: cover;
-}
-
+/* Só a arte da marca, sem texto ao redor — acima da foto, não sobreposta a
+   ela. O <h3> é o contêiner que centraliza a logo. */
 .aboutHeading {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
-  gap: var(--space-1);
-  margin: 0;
-  padding: var(--space-6) var(--space-3) var(--space-3);
-  /* Gradiente para o texto não se perder no que estiver por trás na foto. */
-  background: linear-gradient(to top, rgba(10, 6, 10, 0.85), transparent);
-  color: var(--cream);
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 600;
+  margin: 0 0 var(--space-5);
 }
 
 .aboutLogo {
@@ -132,6 +104,14 @@
   height: auto;
   /* Mesmo brilho neon que os títulos de seção já usam no trecho rosa. */
   filter: drop-shadow(0 0 10px rgba(255, 31, 141, 0.45));
+}
+
+.aboutImage {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-xl);
 }
 
 .aboutText {

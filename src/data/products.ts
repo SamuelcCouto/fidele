@@ -89,7 +89,9 @@ export const productsData: Record<string, Product> = {
       // uma cor, não dá para atribuir a nenhuma.
       { name: "Branco", images: img("essencia", 14, 19, 16, 15, 18) },
       { name: "Preto", images: img("essencia", 12, 13, 11, 1, 8, 10) },
-      { name: "Bege", images: img("essencia", 3, 2, 4, 5, 6, 7) },
+      // A capa tem de ser a peça pela frente, igual às outras cores — a 3 é
+      // a peça pelo avesso (regressão apontada pela cliente).
+      { name: "Bege", images: img("essencia", 2, 4, 3, 5, 6, 7) },
     ],
   },
   eva: {

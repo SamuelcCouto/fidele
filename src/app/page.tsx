@@ -41,28 +41,27 @@ export default function Home() {
         <ProductGrid items={items} />
 
         <section id="quem-somos" className={s.about}>
-          {/* A cliente pediu a logo menor e a pergunta em cima da foto, não
-              empilhada acima dela — o <h3> vira a legenda sobreposta. */}
-          <div className={s.aboutCover}>
+          {/* A cliente pediu só a logo, sem o "Você conhece a" e acima da
+              foto — não sobreposta a ela como na versão anterior. */}
+          <h3 className={s.aboutHeading}>
             <Image
-              src="/img/capa.jpg"
-              alt="Equipe Fidèle"
-              fill
-              sizes="(max-width: 768px) 100vw, 400px"
-              className={s.aboutImage}
+              src="/img/logofidele.png"
+              alt="FIDÈLE"
+              width={802}
+              height={522}
+              className={s.aboutLogo}
             />
-            <h3 className={s.aboutHeading}>
-              Você conhece a{" "}
-              <Image
-                src="/img/logofidele.png"
-                alt="FIDÈLE"
-                width={802}
-                height={522}
-                className={s.aboutLogo}
-              />
-              ?
-            </h3>
-          </div>
+          </h3>
+
+          <Image
+            src="/img/capa.jpg"
+            alt="Equipe Fidèle"
+            width={400}
+            height={267}
+            sizes="(max-width: 768px) 100vw, 400px"
+            className={s.aboutImage}
+          />
+
           <div className={s.aboutText}>
             <p>
               No dia 23 a Fidèle nasceu da vontade de criar algo que fosse além

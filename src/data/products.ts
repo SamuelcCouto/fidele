@@ -60,7 +60,8 @@ export const productsData: Record<string, Product> = {
       "A Despertar traz esse contraste em um bordado colorido que mistura formas e cores de um jeito inesperado. Confeccionada em microfibra, é uma peça leve e simples na base, mas que ganha toda a sua identidade no detalhe.",
     ],
     sizes: ["M", "G", "GG"],
-    colors: [{ name: "Branco", images: img("despertar", 2, 3, 5, 1, 4, 6, 7) }],
+    // despertar6 saiu a pedido da cliente: sem substituição, só remoção.
+    colors: [{ name: "Branco", images: img("despertar", 2, 3, 5, 1, 4, 7) }],
   },
   marco: {
     id: "marco",
